@@ -24,7 +24,8 @@
         .btn { background: #1b365d; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 12px; }
         .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 14px; }
         .btn-blue { background: #2563eb; margin-top: 8px; padding: 12px; font-size: 14px; }
-        .btn-purple { background: #7c3aed; margin-top: 8px; padding: 10px; font-size: 13px; }
+        .btn-purple { background: #7c3aed; margin-top: 5px; padding: 8px 10px; font-size: 12px; }
+        .btn-teal { background: #0d9488; margin-top: 5px; padding: 8px 10px; font-size: 12px; }
         .btn-orange { background: #d97706; margin-top: 8px; padding: 8px; font-size: 12px; }
         .btn-red { background: #dc2626; color: white; margin-top: 6px; padding: 6px; font-size: 11px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
@@ -108,8 +109,10 @@
             </div>
         </div>
 
+        <button class="btn" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
+
         <div class="row">
-            <button class="btn" style="flex:1;" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
+            <button class="btn btn-teal" style="flex:1;" onclick="convertirAPresupuesto()">🔄 Pasar a Presupuesto</button>
             <button class="btn btn-purple" style="flex:1;" onclick="convertirAFactura()">🔄 Pasar a Factura</button>
         </div>
 
@@ -386,6 +389,12 @@
         actualizar();
     }
 
+    function convertirAPresupuesto() {
+        document.getElementById("tipoDoc").value = "PRESUPUESTO";
+        document.getElementById("numDoc").value = formatearNumero("PRES", numPresupuesto);
+        actualizar();
+    }
+
     function cargarDatosPruebaSinAfectarContador() {
         document.getElementById("cliNombre").value = "Comunidad Propietarios (PRUEBA)";
         document.getElementById("cliDir").value = "Av. Oscar Esplá 12, Alicante";
@@ -478,10 +487,8 @@
             document.getElementById("cliNif").value = c.nif || "";
             document.getElementById("cliEmail").value = c.email || "";
             
-            // Al seleccionar un cliente diferente, sumamos 1 a la secuencia de presupuesto/factura
             crearNuevoDocumentoCorrelativo();
         } else {
-            // Si elige "Nuevo / Limpiar Cliente", se vacían campos y también suma número
             document.getElementById("cliNombre").value = "";
             document.getElementById("cliDir").value = "";
             document.getElementById("cliTel").value = "";
