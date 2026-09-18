@@ -10,7 +10,9 @@
         body { background: #e2e8f0; margin: 0; padding: 20px; color: #1e293b; }
         .app-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; }
         .panel-control { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 380px; }
-        .preview-container { flex: 1.2; display: flex; justify-content: center; }
+        .preview-container { flex: 1.2; display: flex; justify-content: center; align-items: flex-start; }
+        #pagesContainer { display: flex; flex-direction: column; gap: 18px; align-items: center; width: 100%; }
+        .page-number { text-align: right; font-size: 9px; color: #64748b; margin-top: 5px; }
         
         h2, h3 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 6px; }
         h3 { border-bottom: 1px solid #cbd5e1; margin-top: 15px; font-size: 14px; }
@@ -30,7 +32,7 @@
         /* MEDIDAS EXACTAS A4 PARA EVITAR DESBORDAMIENTOS HORIZONTALES Y VERTICALES */
         .page-a4 { 
             width: 210mm; 
-            height: 296mm; 
+            height: 297mm; 
             background: white; 
             padding: 10mm 12mm; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
@@ -40,6 +42,7 @@
             font-size: 10.5px; 
             color: #1e293b;
             overflow: hidden;
+             page-break-after: always;
             box-sizing: border-box;
         }
         
@@ -204,7 +207,7 @@
 
     <!-- VISTA PREVIA HOJA A4 -->
     <div class="preview-container">
-        <div class="page-a4" id="hojaA4">
+        <div id="pagesContainer"><div class="page-a4" id="hojaA4">
             <div>
                 <div class="header">
                     <div>
@@ -287,7 +290,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div></div>
     </div>
 </div>
 
@@ -441,22 +444,21 @@
         document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
         document.getElementById("boxIbanDetails").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
-        let tbody = document.getElementById("tablaBody");
-        tbody.innerHTML = "";
+        let filasHTML = "";
         let base = 0;
 
         items.forEach(item => {
-            let cantNum = parseFloat(item.cant.replace(',', '.')) || 0;
-            let totalFila = cantNum * item.precio;
+            let cantNum = parseFloat(String(item.cant).replace(',', '.')) || 0;
+            let totalFila = cantNum * (parseFloat(item.precio) || 0);
             base += totalFila;
 
             let unidadTexto = item.unid ? ` ${item.unid}` : '';
 
-            tbody.innerHTML += `
+            filasHTML += `
                 <tr>
-                    <td>${item.cant}${unidadTexto}</td>
-                    <td>${item.desc}</td>
-                    <td style="text-align: right;">${item.precio.toFixed(2).replace('.', ',')} €</td>
+                    <td>${escapeHTML(item.cant)}${escapeHTML(unidadTexto)}</td>
+                    <td>${escapeHTML(item.desc)}</td>
+                    <td style="text-align: right;">${(parseFloat(item.precio)||0).toFixed(2).replace('.', ',')} €</td>
                     <td style="text-align: right;">${totalFila.toFixed(2).replace('.', ',')} €</td>
                 </tr>
             `;
@@ -478,18 +480,59 @@
         document.getElementById("lblAdelanto").innerText = pago50.toFixed(2).replace('.', ',') + " €";
         document.getElementById("lblPago2").innerText = pago25_1.toFixed(2).replace('.', ',') + " €";
         document.getElementById("lblPagoFinal").innerText = pago25_2.toFixed(2).replace('.', ',') + " €";
+
+        renderPages(filasHTML);
     }
 
-    function descargarPDF() {
-        const element = document.getElementById("hojaA4");
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+        }[char]));
+    }
+
+    function renderPages(filasHTML) {
+        const container = document.getElementById("pagesContainer");
+        const current = document.getElementById("hojaA4");
+        const rows = filasHTML.match(/<tr>[\\s\\S]*?<\\/tr>/g) || [];
+        const maxRows = 18;
+        const chunks = [];
+        for (let i = 0; i < rows.length; i += maxRows) chunks.push(rows.slice(i, i + maxRows));
+        if (!chunks.length) chunks.push([]);
+
+        const template = current.cloneNode(true);
+        container.innerHTML = "";
+
+        chunks.forEach((chunk, index) => {
+            const page = template.cloneNode(true);
+            page.id = index === 0 ? "hojaA4" : "hojaA4_" + (index + 1);
+            const body = page.querySelector("tbody");
+            body.innerHTML = chunk.join("");
+            const footer = page.querySelector(".footer-block");
+            footer.style.display = index === chunks.length - 1 ? "block" : "none";
+
+            const oldNumber = page.querySelector(".page-number");
+            if (oldNumber) oldNumber.remove();
+            const number = document.createElement("div");
+            number.className = "page-number";
+            number.textContent = "Página " + (index + 1) + " de " + chunks.length;
+            page.querySelector(".header").appendChild(number);
+
+            container.appendChild(page);
+        });
+    }
+
+    async function descargarPDF() {
+        actualizar();
+        const element = document.getElementById("pagesContainer");
         const opt = {
             margin: 0,
-            filename: `${document.getElementById("numDoc").value}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, windowWidth: 794 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            filename: `${document.getElementById("numDoc").value || "documento"}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 794 },
+            pagebreak: { mode: ["css", "legacy"] },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
         };
-        html2pdf().set(opt).from(element).save();
+        await html2pdf().set(opt).from(element).save();
     }
 
     cargarDesplegableLogos();
