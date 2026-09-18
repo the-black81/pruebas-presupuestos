@@ -29,20 +29,22 @@
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
         .checkbox-group input { width: auto; cursor: pointer; }
 
-        /* DISEÑO DINÁMICO MULTIPÁGINA */
+        /* DISEÑO FLEXIBLE CON PIE DE PÁGINA EMPUJADO ABAJO */
         .page-a4 { 
             width: 210mm; 
-            min-height: 297mm;
-            height: auto;
+            min-height: 295mm;
             background: white; 
-            padding: 12mm 12mm; 
+            padding: 10mm 10mm; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             font-size: 10px; 
             color: #1e293b;
             box-sizing: border-box;
         }
         
-        .header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 6px; }
         .logo-img { max-width: 140px; max-height: 48px; object-fit: contain; display: block; margin-bottom: 4px; }
         .company-info { font-size: 9px; color: #334155; line-height: 1.2; }
         .company-name { font-weight: bold; color: #0f172a; font-size: 10px; }
@@ -50,32 +52,33 @@
         .client-box { background: #f8fafc; border-radius: 6px; padding: 6px 8px; width: 230px; font-size: 9px; line-height: 1.25; border: 1px solid #e2e8f0; }
         .client-box strong { color: #1b365d; display: inline-block; width: 55px; }
         
-        .doc-bar { background: #f1f5f9; padding: 4px 8px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 8px; border-radius: 3px; font-size: 10px; }
+        .doc-bar { background: #f1f5f9; padding: 4px 8px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 6px; border-radius: 3px; font-size: 10px; }
         
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 12px; }
-        th { background: #1b365d; color: white; padding: 5px 6px; font-size: 9px; text-align: left; font-weight: bold; }
-        td { border-bottom: 1px solid #e2e8f0; padding: 5px 6px; font-size: 9px; color: #334155; word-wrap: break-word; page-break-inside: avoid; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 10px; }
+        th { background: #1b365d; color: white; padding: 4px 6px; font-size: 9px; text-align: left; font-weight: bold; }
+        td { border-bottom: 1px solid #e2e8f0; padding: 4px 6px; font-size: 9px; color: #334155; word-wrap: break-word; page-break-inside: avoid; }
         tr { page-break-inside: avoid; }
 
-        /* BLOQUE FINAL QUE NUNCA SE ROMPE A LA MITAD */
+        /* EL MARGIN-TOP AUTO EMPUJA TODO EL PIE HASTA EL FONDO DE LA HOJA */
         .footer-block { 
             width: 100%; 
-            margin-top: 15px;
+            margin-top: auto; 
+            padding-top: 10px;
             page-break-inside: avoid; 
         }
 
-        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
+        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px; }
         .leyenda { color: #dc2626; font-weight: bold; font-size: 9px; padding-bottom: 2px; }
         
-        .totals-box { width: 190px; background: #f1f5f9; padding: 6px 8px; border-radius: 4px; font-size: 9px; }
+        .totals-box { width: 190px; background: #f1f5f9; padding: 5px 8px; border-radius: 4px; font-size: 9px; }
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: #1b365d; font-weight: bold; }
         .totals-total { font-size: 10.5px; border-top: 1px solid #cbd5e1; padding-top: 2px; margin-top: 2px; color: #0f172a; }
         
-        .conditions-box { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 8.5px; color: #1e293b; font-weight: 500; margin-top: 4px; line-height: 1.35; border: 1px solid #e2e8f0; }
-        .bank-details { margin-top: 4px; padding-top: 4px; border-top: 1px solid #cbd5e1; font-weight: bold; color: #1b365d; }
+        .conditions-box { background: #f8fafc; padding: 5px 8px; border-radius: 4px; font-size: 8.5px; color: #1e293b; font-weight: 500; margin-top: 2px; line-height: 1.3; border: 1px solid #e2e8f0; }
+        .bank-details { margin-top: 3px; padding-top: 3px; border-top: 1px solid #cbd5e1; font-weight: bold; color: #1b365d; }
         
-        .signatures { display: flex; justify-content: space-between; margin-top: 10px; font-size: 8.5px; color: #334155; }
-        .sig-box { width: 48%; background: #fafafa; padding: 6px; height: 40px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 6px; font-size: 8.5px; color: #334155; }
+        .sig-box { width: 48%; background: #fafafa; padding: 4px; height: 35px; border-radius: 4px; border: 1px solid #e2e8f0; }
         
         details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 13px; }
     </style>
@@ -204,54 +207,56 @@
             Mostrar IBAN y Datos Bancarios
         </label>
 
-        <button class="btn btn-green" onclick="descargarPDF()">📄 DESCARGAR PDF MULTIPÁGINA</button>
+        <button class="btn btn-green" onclick="descargarPDF()">📄 DESCARGAR PDF</button>
         <button class="btn btn-blue" onclick="descargarJPG()">🖼️ DESCARGAR JPG</button>
     </div>
 
     <!-- VISTA PREVIA HOJA A4 -->
     <div class="preview-container">
         <div class="page-a4" id="hojaA4">
-            <div class="header">
-                <div>
-                    <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
-                    <div id="textLogoFallback" style="font-weight:bold; font-size:14px; color:#1b365d; margin-bottom:4px;">
-                        REFORMAS INTEGRALES<br><span style="font-size:16px;">CARRASCOSA</span>
+            <div>
+                <div class="header">
+                    <div>
+                        <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
+                        <div id="textLogoFallback" style="font-weight:bold; font-size:14px; color:#1b365d; margin-bottom:4px;">
+                            REFORMAS INTEGRALES<br><span style="font-size:16px;">CARRASCOSA</span>
+                        </div>
+                        <div class="company-info">
+                            <div class="company-name" id="lblEmpNombre">CARRASCOSA ARAUJO ALEJANDRO</div>
+                            CIF/NIF: <span id="lblEmpNif">48363668G</span><br>
+                            <span id="lblEmpDir">Avenida Denia 88 | 03016 Alicante</span><br>
+                            Teléfono: <span id="lblEmpTel">622 356 504</span><br>
+                            e-mail: <span id="lblEmpEmail">suministroscarrascosa@gmail.com</span>
+                        </div>
                     </div>
-                    <div class="company-info">
-                        <div class="company-name" id="lblEmpNombre">CARRASCOSA ARAUJO ALEJANDRO</div>
-                        CIF/NIF: <span id="lblEmpNif">48363668G</span><br>
-                        <span id="lblEmpDir">Avenida Denia 88 | 03016 Alicante</span><br>
-                        Teléfono: <span id="lblEmpTel">622 356 504</span><br>
-                        e-mail: <span id="lblEmpEmail">suministroscarrascosa@gmail.com</span>
+
+                    <div class="client-box">
+                        <div style="font-weight:bold; color:#1b365d; margin-bottom:3px;">CLIENTE:</div>
+                        <strong>Nombre:</strong> <span id="lblCliNombre">-</span><br>
+                        <strong>Dirección:</strong> <span id="lblCliDir">-</span><br>
+                        <strong>Teléfono:</strong> <span id="lblCliTel">-</span><br>
+                        <strong>Correo:</strong> <span id="lblCliEmail">-</span><br>
+                        <strong>CIF/NIF:</strong> <span id="lblCliNif">-</span>
                     </div>
                 </div>
 
-                <div class="client-box">
-                    <div style="font-weight:bold; color:#1b365d; margin-bottom:3px;">CLIENTE:</div>
-                    <strong>Nombre:</strong> <span id="lblCliNombre">-</span><br>
-                    <strong>Dirección:</strong> <span id="lblCliDir">-</span><br>
-                    <strong>Teléfono:</strong> <span id="lblCliTel">-</span><br>
-                    <strong>Correo:</strong> <span id="lblCliEmail">-</span><br>
-                    <strong>CIF/NIF:</strong> <span id="lblCliNif">-</span>
+                <div class="doc-bar">
+                    <span id="lblTituloDoc">PRESUPUESTO Nº: PRES-2026-001</span>
+                    <span id="lblFechaDoc">FECHA: 18/09/2026</span>
                 </div>
-            </div>
 
-            <div class="doc-bar">
-                <span id="lblTituloDoc">PRESUPUESTO Nº: PRES-2026-001</span>
-                <span id="lblFechaDoc">FECHA: 18/09/2026</span>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">CANT.</th>
+                            <th style="width: 52%;">CONCEPTO / TRABAJOS A REALIZAR</th>
+                            <th style="width: 18%; text-align: right;">P. UNIT.</th>
+                            <th style="width: 18%; text-align: right;">IMPORTE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody"></tbody>
+                </table>
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 12%;">CANT.</th>
-                        <th style="width: 52%;">CONCEPTO / TRABAJOS A REALIZAR</th>
-                        <th style="width: 18%; text-align: right;">P. UNIT.</th>
-                        <th style="width: 18%; text-align: right;">IMPORTE</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody"></tbody>
-            </table>
 
             <div class="footer-block">
                 <div class="totals-container">
@@ -486,7 +491,7 @@
     function descargarPDF() {
         const element = document.getElementById("hojaA4");
         const opt = {
-            margin: [10, 10, 10, 10],
+            margin: 0,
             filename: `${document.getElementById("numDoc").value}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
@@ -498,7 +503,13 @@
             pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
-        html2pdf().set(opt).from(element).save();
+        html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+            // Elimina la segunda página si solo contiene un residuo en blanco
+            const totalPages = pdf.internal.getNumberOfPages();
+            if (totalPages > 1 && items.length <= 12) {
+                pdf.deletePage(totalPages);
+            }
+        }).save();
     }
 
     function descargarJPG() {
