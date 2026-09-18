@@ -490,9 +490,12 @@
         }[char]));
     }
 
+    let pageTemplate = null;
+
     function renderPages(filasHTML) {
         const container = document.getElementById("pagesContainer");
-        const current = document.getElementById("hojaA4");
+        const current = pageTemplate || document.querySelector("#pagesContainer .page-a4");
+        if (!current) return;
         const rows = filasHTML.match(/<tr>[\\s\\S]*?<\\/tr>/g) || [];
         const maxRows = 18;
         const chunks = [];
@@ -535,6 +538,7 @@
         await html2pdf().set(opt).from(element).save();
     }
 
+    pageTemplate = document.getElementById("hojaA4").cloneNode(true);
     cargarDesplegableLogos();
     cargarDesplegableClientes();
     renderItems();
