@@ -12,10 +12,11 @@
         .panel-control { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 380px; }
         .preview-container { flex: 1.2; display: flex; justify-content: center; }
         
-        h2 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 6px; }
-        .form-group { margin-bottom: 10px; }
-        label { display: block; font-weight: bold; font-size: 12px; color: #1b365d; margin-bottom: 3px; }
-        input, select { width: 100%; padding: 7px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; }
+        h2, h3 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 6px; }
+        h3 { border-bottom: 1px solid #cbd5e1; margin-top: 15px; font-size: 14px; }
+        .form-group { margin-bottom: 8px; }
+        label { display: block; font-weight: bold; font-size: 11px; color: #1b365d; margin-bottom: 2px; }
+        input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
         .row { display: flex; gap: 8px; }
         
         .item-row { display: flex; gap: 4px; margin-bottom: 6px; align-items: center; background: #f8fafc; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
@@ -37,7 +38,7 @@
         
         .header { display: flex; justify-content: space-between; margin-bottom: 15px; }
         .logo-img { max-width: 160px; max-height: 65px; object-fit: contain; display: block; margin-bottom: 6px; }
-        .company-info { font-size: 10px; color: #334155; line-height: 1.3; }
+        .company-info { font-size: 10px; color: #334155; line-height: 1.35; }
         .company-name { font-weight: bold; color: #0f172a; font-size: 11px; }
         
         .client-box { background: #f8fafc; border-radius: 6px; padding: 10px 12px; width: 270px; font-size: 10.5px; line-height: 1.4; border: 1px solid #f1f5f9; }
@@ -67,6 +68,8 @@
         .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 9.5px; color: #475569; margin-top: 15px; line-height: 1.4; }
         .signatures { display: flex; justify-content: space-between; margin-top: 20px; font-size: 9.5px; color: #64748b; }
         .sig-box { width: 48%; background: #fafafa; padding: 8px; height: 45px; border-radius: 4px; border: 1px solid #f1f5f9; }
+        
+        details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -80,6 +83,35 @@
             <label>Cargar Logo Corporativo (PNG / JPG)</label>
             <input type="file" id="inputLogo" accept="image/*" onchange="cargarLogo(event)">
         </div>
+
+        <!-- SECCIÓN DESPLEGABLE: DATOS DE MI EMPRESA (EDITABLES) -->
+        <details>
+            <summary>✏️ Editar Datos de la Empresa</summary>
+            <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>Nombre Fiscal</label>
+                    <input type="text" id="empNombre" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
+                </div>
+                <div class="row">
+                    <div class="form-group" style="flex:1;">
+                        <label>CIF/NIF</label>
+                        <input type="text" id="empNif" value="48363668G" oninput="actualizar()">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Teléfono</label>
+                        <input type="text" id="empTel" value="622 356 504" oninput="actualizar()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="empDir" value="Avenida Denia 88 | 03016 Alicante" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
+                </div>
+            </div>
+        </details>
 
         <div class="row">
             <div class="form-group" style="flex:1;">
@@ -100,7 +132,7 @@
             <input type="text" id="fechaDoc" value="18/09/2026" oninput="actualizar()">
         </div>
 
-        <label style="margin-top:12px;">Datos del Cliente</label>
+        <h3>Datos del Cliente</h3>
         <div class="form-group"><input type="text" id="cliNombre" value="Comunidad de propietarios" placeholder="Nombre" oninput="actualizar()"></div>
         <div class="form-group"><input type="text" id="cliDir" value="C/Casiopea N°17" placeholder="Dirección" oninput="actualizar()"></div>
         <div class="row">
@@ -108,7 +140,7 @@
             <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="H53086567" placeholder="CIF/NIF" oninput="actualizar()"></div>
         </div>
 
-        <label style="margin-top:12px;">Trabajos y Unidades (m², kg, ud, ml, hrs)</label>
+        <h3>Trabajos y Unidades</h3>
         <div id="itemsContainer"></div>
         <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
@@ -135,11 +167,11 @@
                         REFORMAS INTEGRALES<br><span style="font-size:20px;">CARRASCOSA</span>
                     </div>
                     <div class="company-info">
-                        <div class="company-name">CARRASCOSA ARAUJO ALEJANDRO</div>
-                        CIF/NIF: 48363668G<br>
-                        Avenida Denia 88 | 03016 Alicante<br>
-                        Teléfono: 622 356 504<br>
-                        e-mail: suministroscarrascosa@gmail.com
+                        <div class="company-name" id="lblEmpNombre">CARRASCOSA ARAUJO ALEJANDRO</div>
+                        CIF/NIF: <span id="lblEmpNif">48363668G</span><br>
+                        <span id="lblEmpDir">Avenida Denia 88 | 03016 Alicante</span><br>
+                        Teléfono: <span id="lblEmpTel">622 356 504</span><br>
+                        e-mail: <span id="lblEmpEmail">suministroscarrascosa@gmail.com</span>
                     </div>
                 </div>
 
@@ -196,7 +228,7 @@
                 <div class="signatures">
                     <div class="sig-box">
                         <strong>Firma Empresa:</strong><br>
-                        CARRASCOSA ARAUJO ALEJANDRO
+                        <span id="lblEmpNombreFirma">CARRASCOSA ARAUJO ALEJANDRO</span>
                     </div>
                     <div class="sig-box">
                         <strong>Conforme Cliente (Nombre, DNI y Firma):</strong>
@@ -208,7 +240,6 @@
 </div>
 
 <script>
-    // La unidad inicial empieza en blanco ("") por defecto
     let items = [
         { cant: "1", unid: "", desc: "Saneamiento de paredes y techo", precio: 110.00 }
     ];
@@ -262,6 +293,16 @@
     }
 
     function actualizar() {
+        // Datos Empresa
+        const empNombre = document.getElementById("empNombre").value || "CARRASCOSA ARAUJO ALEJANDRO";
+        document.getElementById("lblEmpNombre").innerText = empNombre;
+        document.getElementById("lblEmpNombreFirma").innerText = empNombre;
+        document.getElementById("lblEmpNif").innerText = document.getElementById("empNif").value || "-";
+        document.getElementById("lblEmpDir").innerText = document.getElementById("empDir").value || "-";
+        document.getElementById("lblEmpTel").innerText = document.getElementById("empTel").value || "-";
+        document.getElementById("lblEmpEmail").innerText = document.getElementById("empEmail").value || "-";
+
+        // Documento y Cliente
         const tipoDoc = document.getElementById("tipoDoc").value;
         const numDoc = document.getElementById("numDoc").value;
         const fecha = document.getElementById("fechaDoc").value;
@@ -273,6 +314,7 @@
         document.getElementById("lblCliTel").innerText = document.getElementById("cliTel").value || "-";
         document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
 
+        // Tabla
         let tbody = document.getElementById("tablaBody");
         tbody.innerHTML = "";
         let base = 0;
@@ -294,6 +336,7 @@
             `;
         });
 
+        // Totales
         let pctIva = parseFloat(document.getElementById("tipoIva").value);
         let cuotaIva = base * (pctIva / 100);
         let totalGeneral = base + cuotaIva;
