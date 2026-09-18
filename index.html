@@ -200,10 +200,10 @@
         <div class="form-group"><input type="text" id="cliEmail" value="" placeholder="Correo Electrónico" oninput="actualizar()"></div>
         <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
 
-        <h3>Proyecto y Ubicación</h3>
+        <h3>Proyecto / Ubicación</h3>
         <div class="form-group">
-            <label>Proyecto / Ubicación (Ej: ASEO, COMEDOR, REFORMA GENERAL)</label>
-            <input type="text" id="txtProyecto" value="" placeholder="Ej: REFORMA DE ASEO Y COCINA" oninput="actualizar()">
+            <label>Proyecto / Ubicación</label>
+            <input type="text" id="txtProyecto" value="" placeholder="Ej: ASEO, COMEDOR, REFORMA GENERAL" oninput="actualizar()">
         </div>
 
         <h3>Trabajos y Unidades</h3>
@@ -413,7 +413,6 @@
             document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
         }
 
-        // Reseteo completo de datos para el nuevo documento
         limpiarFormularioCompleto();
         actualizar();
     }
@@ -618,7 +617,6 @@
         document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
         document.getElementById("lblCliEmail").innerText = document.getElementById("cliEmail").value || "-";
 
-        // Gestión del campo Proyecto / Ubicación
         const proyectoVal = document.getElementById("txtProyecto").value.trim();
         const boxProyecto = document.getElementById("boxProyectoDisplay");
         if (proyectoVal !== "") {
@@ -630,7 +628,6 @@
 
         document.getElementById("lblConceptoNota").innerText = document.getElementById("txtConceptoBancario").value || "";
 
-        // Ocultar / Mostrar texto rojo manteniendo alineación
         const boxManoObra = document.getElementById("boxManoObra");
         if (document.getElementById("chkManoObra").checked) {
             boxManoObra.style.visibility = "visible";
