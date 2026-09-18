@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reformas Integrales Carrascosa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background: #e2e8f0; margin: 0; padding: 20px; color: #1e293b; }
         .app-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; }
         .panel-control { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 380px; }
-        .preview-container { flex: 1.2; display: flex; justify-content: center; align-items: flex-start; }
-        #pagesContainer { display: flex; flex-direction: column; gap: 18px; align-items: center; width: 100%; }
-        .page-number { text-align: right; font-size: 9px; color: #64748b; margin-top: 5px; }
+        .preview-container { flex: 1.2; display: flex; justify-content: center; }
         
         h2, h3 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 6px; }
         h3 { border-bottom: 1px solid #cbd5e1; margin-top: 15px; font-size: 14px; }
@@ -23,57 +22,58 @@
         
         .item-row { display: flex; gap: 4px; margin-bottom: 6px; align-items: center; background: #f8fafc; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
         .btn { background: #1b365d; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 12px; }
-        .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 15px; }
+        .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 14px; }
+        .btn-blue { background: #2563eb; margin-top: 8px; padding: 12px; font-size: 14px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
         .checkbox-group input { width: auto; cursor: pointer; }
 
-        /* MEDIDAS EXACTAS A4 PARA EVITAR DESBORDAMIENTOS HORIZONTALES Y VERTICALES */
+        /* MEDIDAS Y ESTRUCTURA AJUSTADA A100% PARA A4 */
         .page-a4 { 
             width: 210mm; 
             height: 297mm; 
+            max-height: 297mm;
             background: white; 
-            padding: 10mm 12mm; 
+            padding: 8mm 10mm; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            font-size: 10.5px; 
+            font-size: 10px; 
             color: #1e293b;
             overflow: hidden;
-             page-break-after: always;
             box-sizing: border-box;
         }
         
-        .header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .logo-img { max-width: 150px; max-height: 55px; object-fit: contain; display: block; margin-bottom: 4px; }
-        .company-info { font-size: 9.5px; color: #334155; line-height: 1.3; }
-        .company-name { font-weight: bold; color: #0f172a; font-size: 10.5px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .logo-img { max-width: 140px; max-height: 48px; object-fit: contain; display: block; margin-bottom: 4px; }
+        .company-info { font-size: 9px; color: #334155; line-height: 1.2; }
+        .company-name { font-weight: bold; color: #0f172a; font-size: 10px; }
         
-        .client-box { background: #f8fafc; border-radius: 6px; padding: 8px 10px; width: 250px; font-size: 10px; line-height: 1.35; border: 1px solid #f1f5f9; }
-        .client-box strong { color: #1b365d; display: inline-block; width: 60px; }
+        .client-box { background: #f8fafc; border-radius: 6px; padding: 6px 8px; width: 230px; font-size: 9px; line-height: 1.25; border: 1px solid #e2e8f0; }
+        .client-box strong { color: #1b365d; display: inline-block; width: 55px; }
         
-        .doc-bar { background: #f1f5f9; padding: 5px 10px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 10px; border-radius: 3px; font-size: 10.5px; }
+        .doc-bar { background: #f1f5f9; padding: 4px 8px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 6px; border-radius: 3px; font-size: 10px; }
         
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed; }
-        th { background: #1b365d; color: white; padding: 5px 6px; font-size: 9.5px; text-align: left; font-weight: bold; }
-        td { border-bottom: 1px solid #e2e8f0; padding: 5px 6px; font-size: 9.5px; color: #334155; word-wrap: break-word; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background: #1b365d; color: white; padding: 4px 6px; font-size: 9px; text-align: left; font-weight: bold; }
+        td { border-bottom: 1px solid #e2e8f0; padding: 4px 6px; font-size: 9px; color: #334155; word-wrap: break-word; }
         
-        .footer-block { margin-top: auto; width: 100%; }
+        .footer-block { width: 100%; padding-top: 4px; }
 
-        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
-        .leyenda { color: #dc2626; font-weight: bold; font-size: 10px; padding-bottom: 2px; }
+        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px; }
+        .leyenda { color: #dc2626; font-weight: bold; font-size: 9px; padding-bottom: 2px; }
         
-        .totals-box { width: 210px; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; font-size: 10px; }
-        .totals-row { display: flex; justify-content: space-between; margin-bottom: 3px; color: #1b365d; font-weight: bold; }
-        .totals-total { font-size: 11.5px; border-top: 1px solid #cbd5e1; padding-top: 3px; margin-top: 3px; color: #0f172a; }
+        .totals-box { width: 190px; background: #f1f5f9; padding: 5px 8px; border-radius: 4px; font-size: 9px; }
+        .totals-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: #1b365d; font-weight: bold; }
+        .totals-total { font-size: 10.5px; border-top: 1px solid #cbd5e1; padding-top: 2px; margin-top: 2px; color: #0f172a; }
         
-        .conditions-box { background: #f8fafc; padding: 6px 10px; border-radius: 4px; font-size: 9.5px; color: #1e293b; font-weight: 500; margin-top: 4px; line-height: 1.4; border: 1px solid #e2e8f0; }
-        .bank-details { margin-top: 4px; padding-top: 4px; border-top: 1px solid #cbd5e1; font-weight: bold; color: #1b365d; }
+        .conditions-box { background: #f8fafc; padding: 5px 8px; border-radius: 4px; font-size: 8.5px; color: #1e293b; font-weight: 500; margin-top: 2px; line-height: 1.3; border: 1px solid #e2e8f0; }
+        .bank-details { margin-top: 3px; padding-top: 3px; border-top: 1px solid #cbd5e1; font-weight: bold; color: #1b365d; }
         
-        .signatures { display: flex; justify-content: space-between; margin-top: 10px; font-size: 9px; color: #334155; }
-        .sig-box { width: 48%; background: #fafafa; padding: 6px; height: 40px; border-radius: 4px; border: 1px solid #f1f5f9; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 6px; font-size: 8.5px; color: #334155; }
+        .sig-box { width: 48%; background: #fafafa; padding: 4px; height: 35px; border-radius: 4px; border: 1px solid #e2e8f0; }
         
         details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 13px; }
     </style>
@@ -202,18 +202,19 @@
             Mostrar IBAN y Datos Bancarios
         </label>
 
-        <button class="btn btn-green" onclick="descargarPDF()">DESCARGAR PDF PERFECTO</button>
+        <button class="btn btn-green" onclick="descargarPDF()">📄 DESCARGAR EN PDF (1 PÁGINA)</button>
+        <button class="btn btn-blue" onclick="descargarJPG()">🖼️ DESCARGAR EN JPG (IMAGEN)</button>
     </div>
 
     <!-- VISTA PREVIA HOJA A4 -->
     <div class="preview-container">
-        <div id="pagesContainer"><div class="page-a4" id="hojaA4">
+        <div class="page-a4" id="hojaA4">
             <div>
                 <div class="header">
                     <div>
                         <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
-                        <div id="textLogoFallback" style="font-weight:bold; font-size:15px; color:#1b365d; margin-bottom:4px;">
-                            REFORMAS INTEGRALES<br><span style="font-size:18px;">CARRASCOSA</span>
+                        <div id="textLogoFallback" style="font-weight:bold; font-size:14px; color:#1b365d; margin-bottom:4px;">
+                            REFORMAS INTEGRALES<br><span style="font-size:16px;">CARRASCOSA</span>
                         </div>
                         <div class="company-info">
                             <div class="company-name" id="lblEmpNombre">CARRASCOSA ARAUJO ALEJANDRO</div>
@@ -225,7 +226,7 @@
                     </div>
 
                     <div class="client-box">
-                        <div style="font-weight:bold; color:#1b365d; margin-bottom:4px;">CLIENTE:</div>
+                        <div style="font-weight:bold; color:#1b365d; margin-bottom:3px;">CLIENTE:</div>
                         <strong>Nombre:</strong> <span id="lblCliNombre">-</span><br>
                         <strong>Dirección:</strong> <span id="lblCliDir">-</span><br>
                         <strong>Teléfono:</strong> <span id="lblCliTel">-</span><br>
@@ -252,7 +253,6 @@
                 </table>
             </div>
 
-            <!-- BLOQUE INFERIOR CON PAGINACIÓN INTELIGENTE -->
             <div class="footer-block">
                 <div class="totals-container">
                     <div class="leyenda" id="boxManoObra">
@@ -276,7 +276,7 @@
                     <div class="bank-details" id="boxIbanDetails">
                         Titular: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span> &nbsp;|&nbsp; 
                         IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span><br>
-                        <span style="font-weight: normal; color: #475569; font-size: 9px;" id="lblConceptoNota">(Indicar dirección de la obra en el concepto de la transferencia)</span>
+                        <span style="font-weight: normal; color: #475569; font-size: 8px;" id="lblConceptoNota">(Indicar dirección de la obra en el concepto de la transferencia)</span>
                     </div>
                 </div>
 
@@ -290,7 +290,7 @@
                     </div>
                 </div>
             </div>
-        </div></div>
+        </div>
     </div>
 </div>
 
@@ -444,21 +444,22 @@
         document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
         document.getElementById("boxIbanDetails").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
-        let filasHTML = "";
+        let tbody = document.getElementById("tablaBody");
+        tbody.innerHTML = "";
         let base = 0;
 
         items.forEach(item => {
-            let cantNum = parseFloat(String(item.cant).replace(',', '.')) || 0;
-            let totalFila = cantNum * (parseFloat(item.precio) || 0);
+            let cantNum = parseFloat(item.cant.replace(',', '.')) || 0;
+            let totalFila = cantNum * item.precio;
             base += totalFila;
 
             let unidadTexto = item.unid ? ` ${item.unid}` : '';
 
-            filasHTML += `
+            tbody.innerHTML += `
                 <tr>
-                    <td>${escapeHTML(item.cant)}${escapeHTML(unidadTexto)}</td>
-                    <td>${escapeHTML(item.desc)}</td>
-                    <td style="text-align: right;">${(parseFloat(item.precio)||0).toFixed(2).replace('.', ',')} €</td>
+                    <td>${item.cant}${unidadTexto}</td>
+                    <td>${item.desc}</td>
+                    <td style="text-align: right;">${item.precio.toFixed(2).replace('.', ',')} €</td>
                     <td style="text-align: right;">${totalFila.toFixed(2).replace('.', ',')} €</td>
                 </tr>
             `;
@@ -480,65 +481,41 @@
         document.getElementById("lblAdelanto").innerText = pago50.toFixed(2).replace('.', ',') + " €";
         document.getElementById("lblPago2").innerText = pago25_1.toFixed(2).replace('.', ',') + " €";
         document.getElementById("lblPagoFinal").innerText = pago25_2.toFixed(2).replace('.', ',') + " €";
-
-        renderPages(filasHTML);
     }
 
-    function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, char => ({
-            "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-        }[char]));
+    function descargarPDF() {
+        const element = document.getElementById("hojaA4");
+        const opt = {
+            margin: 0,
+            filename: `${document.getElementById("numDoc").value}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true,
+                scrollX: 0,
+                scrollY: 0
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: 'none' } // Evita saltos de página forzados
+        };
+        html2pdf().set(opt).from(element).save();
     }
 
-    let pageTemplate = null;
-
-    function renderPages(filasHTML) {
-        const container = document.getElementById("pagesContainer");
-        const current = pageTemplate || document.querySelector("#pagesContainer .page-a4");
-        if (!current) return;
-        const rows = filasHTML.match(/<tr>[\\s\\S]*?<\\/tr>/g) || [];
-        const maxRows = 18;
-        const chunks = [];
-        for (let i = 0; i < rows.length; i += maxRows) chunks.push(rows.slice(i, i + maxRows));
-        if (!chunks.length) chunks.push([]);
-
-        const template = current.cloneNode(true);
-        container.innerHTML = "";
-
-        chunks.forEach((chunk, index) => {
-            const page = template.cloneNode(true);
-            page.id = index === 0 ? "hojaA4" : "hojaA4_" + (index + 1);
-            const body = page.querySelector("tbody");
-            body.innerHTML = chunk.join("");
-            const footer = page.querySelector(".footer-block");
-            footer.style.display = index === chunks.length - 1 ? "block" : "none";
-
-            const oldNumber = page.querySelector(".page-number");
-            if (oldNumber) oldNumber.remove();
-            const number = document.createElement("div");
-            number.className = "page-number";
-            number.textContent = "Página " + (index + 1) + " de " + chunks.length;
-            page.querySelector(".header").appendChild(number);
-
-            container.appendChild(page);
+    function descargarJPG() {
+        const element = document.getElementById("hojaA4");
+        html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            scrollX: 0,
+            scrollY: 0
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `${document.getElementById("numDoc").value}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.98);
+            link.click();
         });
     }
 
-    async function descargarPDF() {
-        actualizar();
-        const element = document.getElementById("pagesContainer");
-        const opt = {
-            margin: 0,
-            filename: `${document.getElementById("numDoc").value || "documento"}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 794 },
-            pagebreak: { mode: ["css", "legacy"] },
-            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-        };
-        await html2pdf().set(opt).from(element).save();
-    }
-
-    pageTemplate = document.getElementById("hojaA4").cloneNode(true);
     cargarDesplegableLogos();
     cargarDesplegableClientes();
     renderItems();
