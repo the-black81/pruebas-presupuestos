@@ -56,6 +56,17 @@
         
         .doc-bar { background: #f1f5f9; padding: 4px 8px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 6px; border-radius: 3px; font-size: 10px; }
         
+        .proyecto-title {
+            background: #e2e8f0;
+            color: #1b365d;
+            font-weight: bold;
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 3px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
         table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 10px; }
         th { background: #1b365d; color: white; padding: 4px 6px; font-size: 9px; text-align: left; font-weight: bold; }
         td { border-bottom: 1px solid #e2e8f0; padding: 4px 6px; font-size: 9px; color: #334155; word-wrap: break-word; page-break-inside: avoid; }
@@ -68,10 +79,10 @@
             page-break-inside: avoid; 
         }
 
-        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px; }
-        .leyenda { color: #dc2626; font-weight: bold; font-size: 9px; padding-bottom: 2px; }
+        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px; width: 100%; }
+        .leyenda { color: #dc2626; font-weight: bold; font-size: 9px; padding-bottom: 2px; flex: 1; }
         
-        .totals-box { width: 190px; background: #f1f5f9; padding: 5px 8px; border-radius: 4px; font-size: 9px; }
+        .totals-box { width: 190px; background: #f1f5f9; padding: 5px 8px; border-radius: 4px; font-size: 9px; margin-left: auto; }
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: #1b365d; font-weight: bold; }
         .totals-total { font-size: 10.5px; border-top: 1px solid #cbd5e1; padding-top: 2px; margin-top: 2px; color: #0f172a; }
         
@@ -190,6 +201,11 @@
         <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
 
         <h3>Trabajos y Unidades</h3>
+        <div class="form-group">
+            <label>Proyecto / Ubicación (Ej: ASEO, COMEDOR, REFORMA GENERAL)</label>
+            <input type="text" id="txtProyecto" value="" placeholder="Ej: REFORMA DE ASEO Y COCINA" oninput="actualizar()">
+        </div>
+
         <div id="itemsContainer"></div>
         <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
@@ -254,6 +270,10 @@
                 <div class="doc-bar">
                     <span id="lblTituloDoc">PRESUPUESTO Nº: PRES-2026-001</span>
                     <span id="lblFechaDoc">FECHA: 18/09/2026</span>
+                </div>
+
+                <div class="proyecto-title" id="boxProyectoDisplay" style="display:none;">
+                    PROYECTO: <span id="lblProyecto"></span>
                 </div>
 
                 <table>
@@ -418,6 +438,7 @@
         document.getElementById("cliTel").value = "655 443 221";
         document.getElementById("cliNif").value = "H01234567";
         document.getElementById("cliEmail").value = "prueba@comunidad.com";
+        document.getElementById("txtProyecto").value = "REFORMA DE ASEO PRINCIPAL";
 
         items = [
             { cant: "1", unid: "ud", desc: "Prueba: Retirada de escombros y contenedores", precio: 220.00 },
@@ -511,7 +532,6 @@
             document.getElementById("cliNif").value = c.nif || "";
             document.getElementById("cliEmail").value = c.email || "";
         } else {
-            // Vaciar completamente todos los campos del cliente
             document.getElementById("cliNombre").value = "";
             document.getElementById("cliDir").value = "";
             document.getElementById("cliTel").value = "";
@@ -584,9 +604,28 @@
         document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
         document.getElementById("lblCliEmail").innerText = document.getElementById("cliEmail").value || "-";
 
+        // Gestión del campo Proyecto / Ubicación
+        const proyectoVal = document.getElementById("txtProyecto").value.trim();
+        const boxProyecto = document.getElementById("boxProyectoDisplay");
+        if (proyectoVal !== "") {
+            document.getElementById("lblProyecto").innerText = proyectoVal;
+            boxProyecto.style.display = "block";
+        } else {
+            boxProyecto.style.display = "none";
+        }
+
         document.getElementById("lblConceptoNota").innerText = document.getElementById("txtConceptoBancario").value || "";
 
-        document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
+        // Ocultar / Mostrar texto rojo manteniendo alineación
+        const boxManoObra = document.getElementById("boxManoObra");
+        if (document.getElementById("chkManoObra").checked) {
+            boxManoObra.style.visibility = "visible";
+            boxManoObra.style.display = "block";
+        } else {
+            boxManoObra.style.visibility = "hidden";
+            boxManoObra.style.display = "block";
+        }
+
         document.getElementById("boxIbanDetails").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
         let tbody = document.getElementById("tablaBody");
