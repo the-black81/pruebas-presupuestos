@@ -354,10 +354,10 @@
         
         if (tipo === "PRESUPUESTO") {
             btn.innerText = "🔄 Cambiar a FACTURA";
-            btn.style.background = "#7c3aed"; // Morado para Factura
+            btn.style.background = "#7c3aed";
         } else {
             btn.innerText = "🔄 Cambiar a PRESUPUESTO";
-            btn.style.background = "#0d9488"; // Verde/Teal para Presupuesto
+            btn.style.background = "#0d9488";
         }
     }
 
@@ -365,7 +365,7 @@
         const valorManual = document.getElementById("numDoc").value;
         const coincidencias = valorManual.match(/\d+/g);
         
-        if (coincidencias && coincidencias.length > 0) {
+        if (coincidencias && coincidencias.length > 0 && !valorManual.includes("XXX") && !valorManual.includes("TEST")) {
             const ultimoNum = parseInt(coincidencias[coincidencias.length - 1]);
             const tipo = document.getElementById("tipoDoc").value;
             
@@ -405,6 +405,14 @@
     }
 
     function cargarDatosPruebaSinAfectarContador() {
+        const tipo = document.getElementById("tipoDoc").value;
+        
+        if (tipo === "PRESUPUESTO") {
+            document.getElementById("numDoc").value = "PRES-XXX-TEST";
+        } else {
+            document.getElementById("numDoc").value = "FACT-XXX-TEST";
+        }
+
         document.getElementById("cliNombre").value = "Comunidad Propietarios (PRUEBA)";
         document.getElementById("cliDir").value = "Av. Oscar Esplá 12, Alicante";
         document.getElementById("cliTel").value = "655 443 221";
