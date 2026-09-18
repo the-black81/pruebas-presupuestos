@@ -188,6 +188,11 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label>Texto Nota del Concepto Bancario (Editable)</label>
+            <input type="text" id="txtConceptoBancario" value="(Indicar dirección de la obra en el concepto de la transferencia)" oninput="actualizar()">
+        </div>
+
         <label class="checkbox-group">
             <input type="checkbox" id="chkManoObra" checked onchange="actualizar()">
             Mostrar texto rojo "Mano de obra y desplazamiento incluido"
@@ -260,7 +265,6 @@
                     </div>
                 </div>
 
-                <!-- LA CONDICIÓN DE PAGO SIEMPRE SE MUESTRA -->
                 <div class="conditions-box">
                     <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
                     • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) para formalizar el pedido.<br>
@@ -268,11 +272,10 @@
                     • Pago final restante del 25% (<span id="lblPagoFinal">0,00 €</span>) a la finalización de los trabajos.<br>
                     • Validez del documento: <span id="lblValidezDoc">30 Días</span>.<br>
                     
-                    <!-- SOLO ESTE BLOQUE SE OCULTA AL DESMARCAR EL CHECKBOX -->
                     <div class="bank-details" id="boxIbanDetails">
                         Titular: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span> &nbsp;|&nbsp; 
                         IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span><br>
-                        <span style="font-weight: normal; color: #475569; font-size: 9.5px;">(Indicar Nº de documento en el concepto de la transferencia)</span>
+                        <span style="font-weight: normal; color: #475569; font-size: 9.5px;" id="lblConceptoNota">(Indicar dirección de la obra en el concepto de la transferencia)</span>
                     </div>
                 </div>
 
@@ -439,9 +442,11 @@
         document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
         document.getElementById("lblCliEmail").innerText = document.getElementById("cliEmail").value || "-";
 
+        // Texto Nota Concepto Editable
+        document.getElementById("lblConceptoNota").innerText = document.getElementById("txtConceptoBancario").value || "";
+
         // Visibilidad
         document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
-        // Ahora solo oculta los datos bancarios del IBAN
         document.getElementById("boxIbanDetails").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
         // Tabla
