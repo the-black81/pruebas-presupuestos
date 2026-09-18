@@ -180,13 +180,13 @@
                 <option value="">-- Nuevo / Limpiar Cliente --</option>
             </select>
         </div>
-        <div class="form-group"><input type="text" id="cliNombre" value="Comunidad de propietarios" placeholder="Nombre / Empresa" oninput="actualizar()"></div>
-        <div class="form-group"><input type="text" id="cliDir" value="C/Casiopea N°17" placeholder="Dirección Cliente" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliNombre" value="" placeholder="Nombre / Empresa" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliDir" value="" placeholder="Dirección Cliente" oninput="actualizar()"></div>
         <div class="row">
-            <div class="form-group" style="flex:1;"><input type="text" id="cliTel" value="662957309" placeholder="Teléfono" oninput="actualizar()"></div>
-            <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="H53086567" placeholder="CIF/NIF" oninput="actualizar()"></div>
+            <div class="form-group" style="flex:1;"><input type="text" id="cliTel" value="" placeholder="Teléfono" oninput="actualizar()"></div>
+            <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="" placeholder="CIF/NIF" oninput="actualizar()"></div>
         </div>
-        <div class="form-group"><input type="text" id="cliEmail" value="cliente@correo.com" placeholder="Correo Electrónico" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliEmail" value="" placeholder="Correo Electrónico" oninput="actualizar()"></div>
         <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
 
         <h3>Trabajos y Unidades</h3>
@@ -311,7 +311,7 @@
 </div>
 
 <script>
-    let items = [{ cant: "1", unid: "", desc: "Saneamiento de paredes y techo", precio: 110.00 }];
+    let items = [{ cant: "1", unid: "", desc: "", precio: 0.00 }];
     let galeriaLogos = JSON.parse(localStorage.getItem("carrascosa_logos") || "[]");
     let clientesGuardados = JSON.parse(localStorage.getItem("carrascosa_clientes") || "[]");
 
@@ -467,8 +467,14 @@
     }
 
     function guardarClienteActual() {
+        const nombreCli = document.getElementById("cliNombre").value.trim();
+        if (!nombreCli) {
+            alert("Por favor, introduce al menos un nombre para guardar el cliente.");
+            return;
+        }
+
         const cliente = {
-            nombre: document.getElementById("cliNombre").value,
+            nombre: nombreCli,
             dir: document.getElementById("cliDir").value,
             tel: document.getElementById("cliTel").value,
             nif: document.getElementById("cliNif").value,
@@ -496,6 +502,7 @@
 
     function cargarClienteSeleccionado() {
         const idx = document.getElementById("selectCliente").value;
+        
         if(idx !== "") {
             const c = clientesGuardados[idx];
             document.getElementById("cliNombre").value = c.nombre || "";
@@ -503,16 +510,17 @@
             document.getElementById("cliTel").value = c.tel || "";
             document.getElementById("cliNif").value = c.nif || "";
             document.getElementById("cliEmail").value = c.email || "";
-            
-            crearNuevoDocumentoCorrelativo();
         } else {
+            // Vaciar completamente todos los campos del cliente
             document.getElementById("cliNombre").value = "";
             document.getElementById("cliDir").value = "";
             document.getElementById("cliTel").value = "";
             document.getElementById("cliNif").value = "";
             document.getElementById("cliEmail").value = "";
-            crearNuevoDocumentoCorrelativo();
         }
+        
+        crearNuevoDocumentoCorrelativo();
+        actualizar();
     }
 
     function renderItems() {
