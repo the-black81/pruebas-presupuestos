@@ -93,7 +93,7 @@
         .signatures { display: flex; justify-content: space-between; margin-top: 6px; font-size: 8.5px; color: #334155; }
         .sig-box { width: 48%; background: #fafafa; padding: 4px; height: 35px; border-radius: 4px; border: 1px solid #e2e8f0; }
         
-        details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 13px; }
+        details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -116,12 +116,15 @@
             <button class="btn btn-red" style="flex:1;" onclick="eliminarDocumentoActualDelHistorial()">🗑️ Borrar de Memoria</button>
         </div>
 
-        <h3 style="margin-top:15px;">💾 Copia de Seguridad (Backup)</h3>
-        <button class="btn btn-orange" onclick="descargarCopiaSeguridad()">📥 Descargar Backup con Fecha Actual</button>
-        <div class="form-group" style="margin-top:6px;">
-            <label>Restaurar Copia de Seguridad (.json)</label>
-            <input type="file" id="inputBackup" accept=".json" onchange="restaurarCopiaSeguridad(event)">
-        </div>
+        <!-- OPCIONES DE BACKUP OCULTAS EN PLEGAR/DESPLEGAR -->
+        <details style="margin-top: 12px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <summary>💾 Copia de Seguridad (Backup)</summary>
+            <button class="btn btn-orange" onclick="descargarCopiaSeguridad()">📥 Descargar Backup con Fecha Actual</button>
+            <div class="form-group" style="margin-top:6px;">
+                <label>Restaurar Copia de Seguridad (.json)</label>
+                <input type="file" id="inputBackup" accept=".json" onchange="restaurarCopiaSeguridad(event)">
+            </div>
+        </details>
 
         <h3>Numeración del Documento</h3>
         <div class="row">
