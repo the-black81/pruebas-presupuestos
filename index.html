@@ -195,7 +195,7 @@
 
         <label class="checkbox-group">
             <input type="checkbox" id="chkFormaPago" checked onchange="actualizar()">
-            Mostrar sección "FORMA DE PAGO E IBAN"
+            Mostrar IBAN y Datos Bancarios
         </label>
 
         <button class="btn btn-green" onclick="descargarPDF()">DESCARGAR PDF PERFECTO</button>
@@ -260,14 +260,16 @@
                     </div>
                 </div>
 
-                <div class="conditions-box" id="boxFormaPago">
+                <!-- LA CONDICIÓN DE PAGO SIEMPRE SE MUESTRA -->
+                <div class="conditions-box">
                     <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
                     • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) para formalizar el pedido.<br>
                     • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra.<br>
                     • Pago final restante del 25% (<span id="lblPagoFinal">0,00 €</span>) a la finalización de los trabajos.<br>
                     • Validez del documento: <span id="lblValidezDoc">30 Días</span>.<br>
                     
-                    <div class="bank-details">
+                    <!-- SOLO ESTE BLOQUE SE OCULTA AL DESMARCAR EL CHECKBOX -->
+                    <div class="bank-details" id="boxIbanDetails">
                         Titular: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span> &nbsp;|&nbsp; 
                         IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span><br>
                         <span style="font-weight: normal; color: #475569; font-size: 9.5px;">(Indicar Nº de documento en el concepto de la transferencia)</span>
@@ -439,7 +441,8 @@
 
         // Visibilidad
         document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
-        document.getElementById("boxFormaPago").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
+        // Ahora solo oculta los datos bancarios del IBAN
+        document.getElementById("boxIbanDetails").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
         // Tabla
         let tbody = document.getElementById("tablaBody");
@@ -476,7 +479,7 @@
         // Cálculo de los 3 plazos
         let pago50 = totalGeneral * 0.5;
         let pago25_1 = totalGeneral * 0.25;
-        let pago25_2 = totalGeneral - (pago50 + pago25_1); // Ajuste exacto para evitar decimales sueltos
+        let pago25_2 = totalGeneral - (pago50 + pago25_1);
 
         document.getElementById("lblAdelanto").innerText = pago50.toFixed(2).replace('.', ',') + " €";
         document.getElementById("lblPago2").innerText = pago25_1.toFixed(2).replace('.', ',') + " €";
