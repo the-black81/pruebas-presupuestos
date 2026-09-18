@@ -24,8 +24,7 @@
         .btn { background: #1b365d; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 12px; }
         .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 14px; }
         .btn-blue { background: #2563eb; margin-top: 8px; padding: 12px; font-size: 14px; }
-        .btn-purple { background: #7c3aed; margin-top: 5px; padding: 8px 10px; font-size: 12px; }
-        .btn-teal { background: #0d9488; margin-top: 5px; padding: 8px 10px; font-size: 12px; }
+        .btn-toggle { background: #7c3aed; margin-top: 8px; padding: 10px; font-size: 13px; font-weight: bold; transition: all 0.2s ease; }
         .btn-orange { background: #d97706; margin-top: 8px; padding: 8px; font-size: 12px; }
         .btn-red { background: #dc2626; color: white; margin-top: 6px; padding: 6px; font-size: 11px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
@@ -111,10 +110,8 @@
 
         <button class="btn" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
 
-        <div class="row">
-            <button class="btn btn-teal" style="flex:1;" onclick="convertirAPresupuesto()">🔄 Pasar a Presupuesto</button>
-            <button class="btn btn-purple" style="flex:1;" onclick="convertirAFactura()">🔄 Pasar a Factura</button>
-        </div>
+        <!-- BOTÓN ÚNICO DINÁMICO -->
+        <button id="btnToggleDoc" class="btn btn-toggle" onclick="alternarTipoDocumento()">🔄 Cambiar a FACTURA</button>
 
         <button class="btn btn-red" onclick="resetearContadoresACero()">⚠️ Resetear Contadores a 1</button>
 
@@ -333,11 +330,35 @@
         } else {
             document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
         }
+        actualizarBotonToggle();
         actualizar();
     }
 
     function cambiarTipoDocUI() {
         inicializarNumeracion();
+    }
+
+    function alternarTipoDocumento() {
+        const selectTipo = document.getElementById("tipoDoc");
+        if (selectTipo.value === "PRESUPUESTO") {
+            selectTipo.value = "FACTURA";
+        } else {
+            selectTipo.value = "PRESUPUESTO";
+        }
+        inicializarNumeracion();
+    }
+
+    function actualizarBotonToggle() {
+        const tipo = document.getElementById("tipoDoc").value;
+        const btn = document.getElementById("btnToggleDoc");
+        
+        if (tipo === "PRESUPUESTO") {
+            btn.innerText = "🔄 Cambiar a FACTURA";
+            btn.style.background = "#7c3aed"; // Morado para Factura
+        } else {
+            btn.innerText = "🔄 Cambiar a PRESUPUESTO";
+            btn.style.background = "#0d9488"; // Verde/Teal para Presupuesto
+        }
     }
 
     function detectarNumeroManualYCargar() {
@@ -381,18 +402,6 @@
             localStorage.setItem("carrascosa_seq_fact", 1);
             inicializarNumeracion();
         }
-    }
-
-    function convertirAFactura() {
-        document.getElementById("tipoDoc").value = "FACTURA";
-        document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
-        actualizar();
-    }
-
-    function convertirAPresupuesto() {
-        document.getElementById("tipoDoc").value = "PRESUPUESTO";
-        document.getElementById("numDoc").value = formatearNumero("PRES", numPresupuesto);
-        actualizar();
     }
 
     function cargarDatosPruebaSinAfectarContador() {
