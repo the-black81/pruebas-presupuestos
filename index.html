@@ -20,14 +20,14 @@
         .row { display: flex; gap: 8px; }
         
         .item-row { display: flex; gap: 4px; margin-bottom: 6px; align-items: center; background: #f8fafc; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
-        .btn { background: #1b365d; color: white; border: none; padding: 9px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; }
+        .btn { background: #1b365d; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 12px; }
         .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 15px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
         .checkbox-group input { width: auto; cursor: pointer; }
 
-        /* HOJA A4 CON PIE DE PÁGINA FIJO ABAJO DEL TODO */
+        /* HOJA A4 EXACTA */
         .page-a4 { 
             width: 210mm; 
             height: 297mm; 
@@ -62,15 +62,12 @@
         }
 
         .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
-        
-        /* TEXTO ROJO AJUSTADO JUSTO ENCIMA DE FORMA DE PAGO */
         .leyenda { color: #dc2626; font-weight: bold; font-size: 10.5px; padding-bottom: 4px; }
         
         .totals-box { width: 220px; background: #f1f5f9; padding: 8px 12px; border-radius: 4px; font-size: 10.5px; }
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #1b365d; font-weight: bold; }
         .totals-total { font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: 4px; color: #0f172a; }
         
-        /* TEXTOS MÁS OSCUROS EN CONDICIONES Y PAGO */
         .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 10px; color: #1e293b; font-weight: 500; margin-top: 6px; line-height: 1.45; border: 1px solid #f1f5f9; }
         .signatures { display: flex; justify-content: space-between; margin-top: 15px; font-size: 9.5px; color: #334155; }
         .sig-box { width: 48%; background: #fafafa; padding: 8px; height: 45px; border-radius: 4px; border: 1px solid #f1f5f9; }
@@ -85,16 +82,23 @@
     <div class="panel-control">
         <h2>Panel de Configuración</h2>
         
+        <!-- GESTOR Y SELECTOR DE LOGOS -->
         <div class="form-group">
-            <label>Cargar Logo Corporativo (PNG / JPG)</label>
-            <input type="file" id="inputLogo" accept="image/*" onchange="cargarLogo(event)">
+            <label>Subir Nuevo Logo al Banco de Logos</label>
+            <input type="file" id="inputLogo" accept="image/*" onchange="guardarNuevoLogo(event)">
+        </div>
+        <div class="form-group">
+            <label>Seleccionar Logo de la Galería</label>
+            <select id="selectLogo" onchange="seleccionarLogoGuardado()">
+                <option value="">- Sin Logo / Texto -</option>
+            </select>
         </div>
 
         <details>
             <summary>✏️ Editar Datos de la Empresa</summary>
             <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
                 <div class="form-group">
-                    <label>Nombre Fiscal</label>
+                    <label>Nombre Fiscal / Empresa</label>
                     <input type="text" id="empNombre" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
                 </div>
                 <div class="row">
@@ -108,7 +112,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Dirección</label>
+                    <label>Dirección Empresa</label>
                     <input type="text" id="empDir" value="Avenida Denia 88 | 03016 Alicante" oninput="actualizar()">
                 </div>
                 <div class="form-group">
@@ -116,7 +120,11 @@
                     <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
                 </div>
                 <div class="form-group">
-                    <label>IBAN Corporativo</label>
+                    <label>Titular de la Cuenta / Referente</label>
+                    <input type="text" id="empTitularIban" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Número de IBAN</label>
                     <input type="text" id="empIban" value="ES40 2100 2158 6402 0085 2354" oninput="actualizar()">
                 </div>
             </div>
@@ -148,12 +156,20 @@
         </div>
 
         <h3>Datos del Cliente</h3>
-        <div class="form-group"><input type="text" id="cliNombre" value="Comunidad de propietarios" placeholder="Nombre" oninput="actualizar()"></div>
-        <div class="form-group"><input type="text" id="cliDir" value="C/Casiopea N°17" placeholder="Dirección" oninput="actualizar()"></div>
+        <div class="form-group">
+            <label>Cargar Cliente Guardado</label>
+            <select id="selectCliente" onchange="cargarClienteSeleccionado()">
+                <option value="">-- Nuevo / Seleccionar Cliente --</option>
+            </select>
+        </div>
+        <div class="form-group"><input type="text" id="cliNombre" value="Comunidad de propietarios" placeholder="Nombre / Empresa" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliDir" value="C/Casiopea N°17" placeholder="Dirección Cliente" oninput="actualizar()"></div>
         <div class="row">
             <div class="form-group" style="flex:1;"><input type="text" id="cliTel" value="662957309" placeholder="Teléfono" oninput="actualizar()"></div>
             <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="H53086567" placeholder="CIF/NIF" oninput="actualizar()"></div>
         </div>
+        <div class="form-group"><input type="text" id="cliEmail" value="cliente@correo.com" placeholder="Correo Electrónico" oninput="actualizar()"></div>
+        <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
 
         <h3>Trabajos y Unidades</h3>
         <div id="itemsContainer"></div>
@@ -169,7 +185,6 @@
             </select>
         </div>
 
-        <!-- OPCIONES PARA AÑADIR/QUITAR ELEMENTOS -->
         <label class="checkbox-group">
             <input type="checkbox" id="chkManoObra" checked onchange="actualizar()">
             Mostrar texto rojo "Mano de obra y desplazamiento incluido"
@@ -228,7 +243,7 @@
                 <tbody id="tablaBody"></tbody>
             </table>
 
-            <!-- PIE DE PÁGINA FIJADO EN LA PARTE INFERIOR -->
+            <!-- PIE DE PÁGINA FIJADO AL FINAL DEL A4 -->
             <div class="footer-fixed-bottom">
                 <div class="totals-container">
                     <div class="leyenda" id="boxManoObra">
@@ -247,6 +262,7 @@
                     • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) del total de dicho presupuesto para formalizar el pedido.<br>
                     • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un último pago del 25% restante.<br>
                     • Validez del documento: <span id="lblValidezDoc">30 Días</span>. Indicar Nº documento en el concepto.<br>
+                    • Titular de la cuenta: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span><br>
                     • IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span>
                 </div>
 
@@ -265,19 +281,89 @@
 </div>
 
 <script>
-    let items = [
-        { cant: "1", unid: "", desc: "Saneamiento de paredes y techo", precio: 110.00 }
-    ];
+    let items = [{ cant: "1", unid: "", desc: "Saneamiento de paredes y techo", precio: 110.00 }];
+    let galeriaLogos = JSON.parse(localStorage.getItem("carrascosa_logos") || "[]");
+    let clientesGuardados = JSON.parse(localStorage.getItem("carrascosa_clientes") || "[]");
 
-    function cargarLogo(event) {
+    // MEMORIA DE LOGOS
+    function guardarNuevoLogo(event) {
         const reader = new FileReader();
         reader.onload = function() {
-            const img = document.getElementById('imgLogo');
-            img.src = reader.result;
-            img.style.display = 'block';
-            document.getElementById('textLogoFallback').style.display = 'none';
+            const base64Img = reader.result;
+            const nombreLogo = `Logo ${galeriaLogos.length + 1}`;
+            galeriaLogos.push({ nombre: nombreLogo, data: base64Img });
+            localStorage.setItem("carrascosa_logos", JSON.stringify(galeriaLogos));
+            cargarDesplegableLogos();
+            aplicarLogoData(base64Img);
         };
         reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function cargarDesplegableLogos() {
+        const select = document.getElementById("selectLogo");
+        select.innerHTML = '<option value="">- Sin Logo / Texto -</option>';
+        galeriaLogos.forEach((logo, index) => {
+            select.innerHTML += `<option value="${index}">${logo.nombre}</option>`;
+        });
+    }
+
+    function seleccionarLogoGuardado() {
+        const idx = document.getElementById("selectLogo").value;
+        if(idx !== "") {
+            aplicarLogoData(galeriaLogos[idx].data);
+        } else {
+            document.getElementById('imgLogo').style.display = 'none';
+            document.getElementById('textLogoFallback').style.display = 'block';
+        }
+    }
+
+    function aplicarLogoData(dataUri) {
+        const img = document.getElementById('imgLogo');
+        img.src = dataUri;
+        img.style.display = 'block';
+        document.getElementById('textLogoFallback').style.display = 'none';
+    }
+
+    // MEMORIA DE CLIENTES
+    function guardarClienteActual() {
+        const cliente = {
+            nombre: document.getElementById("cliNombre").value,
+            dir: document.getElementById("cliDir").value,
+            tel: document.getElementById("cliTel").value,
+            nif: document.getElementById("cliNif").value,
+            email: document.getElementById("cliEmail").value
+        };
+        
+        const idxExistente = clientesGuardados.findIndex(c => c.nombre.toLowerCase() === cliente.nombre.toLowerCase());
+        if(idxExistente >= 0) {
+            clientesGuardados[idxExistente] = cliente;
+        } else {
+            clientesGuardados.push(cliente);
+        }
+        localStorage.setItem("carrascosa_clientes", JSON.stringify(clientesGuardados));
+        cargarDesplegableClientes();
+        alert("Cliente guardado en memoria con éxito.");
+    }
+
+    function cargarDesplegableClientes() {
+        const select = document.getElementById("selectCliente");
+        select.innerHTML = '<option value="">-- Nuevo / Seleccionar Cliente --</option>';
+        clientesGuardados.forEach((c, index) => {
+            select.innerHTML += `<option value="${index}">${c.nombre}</option>`;
+        });
+    }
+
+    function cargarClienteSeleccionado() {
+        const idx = document.getElementById("selectCliente").value;
+        if(idx !== "") {
+            const c = clientesGuardados[idx];
+            document.getElementById("cliNombre").value = c.nombre || "";
+            document.getElementById("cliDir").value = c.dir || "";
+            document.getElementById("cliTel").value = c.tel || "";
+            document.getElementById("cliNif").value = c.nif || "";
+            document.getElementById("cliEmail").value = c.email || "";
+            actualizar();
+        }
     }
 
     function renderItems() {
@@ -326,6 +412,7 @@
         document.getElementById("lblEmpDir").innerText = document.getElementById("empDir").value || "-";
         document.getElementById("lblEmpTel").innerText = document.getElementById("empTel").value || "-";
         document.getElementById("lblEmpEmail").innerText = document.getElementById("empEmail").value || "-";
+        document.getElementById("lblTitularIban").innerText = document.getElementById("empTitularIban").value || "-";
         document.getElementById("lblIban").innerText = document.getElementById("empIban").value || "-";
 
         // Documento y Cliente
@@ -340,8 +427,9 @@
         document.getElementById("lblCliDir").innerText = document.getElementById("cliDir").value || "-";
         document.getElementById("lblCliTel").innerText = document.getElementById("cliTel").value || "-";
         document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
+        document.getElementById("lblCliEmail").innerText = document.getElementById("cliEmail").value || "-";
 
-        // Visibilidad según Checkboxes
+        // Visibilidad
         document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
         document.getElementById("boxFormaPago").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
@@ -392,6 +480,9 @@
         html2pdf().set(opt).from(element).save();
     }
 
+    // Inicialización
+    cargarDesplegableLogos();
+    cargarDesplegableClientes();
     renderItems();
     actualizar();
 </script>
