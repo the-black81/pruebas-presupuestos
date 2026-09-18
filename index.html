@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reformas Integrales Carrascosa - Presupuestos Web</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1400px; margin: 0 auto; }
+        .form-section { flex: 1; min-width: 360px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .preview-section { flex: 1.2; min-width: 400px; display: flex; justify-content: center; }
+        
+        h2 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 8px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; font-size: 13px; color: #1b365d; margin-bottom: 4px; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; }
+        .row { display: flex; gap: 8px; }
+        
+        .item-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; background: #f8fafc; padding: 8px; border-radius: 4px; }
+        .btn { background: #1b365d; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-green { background: #059669; }
+        .btn-danger { background: #dc2626; padding: 6px 10px; }
+        
+        /* HOJA A4 PREVIEW */
+        .page-a4 { width: 210mm; min-height: 297mm; background: white; padding: 15mm; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); position: relative; font-size: 12px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .company-info { font-size: 11px; color: #334155; }
+        .company-title { font-weight: bold; color: #1b365d; font-size: 13px; }
+        .logo { width: 140px; margin-bottom: 8px; }
+        
+        .client-box { background: #f8fafc; border-radius: 6px; padding: 10px 14px; width: 260px; font-size: 11px; }
+        .doc-header { background: #f1f5f9; padding: 8px 12px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 15px; border-radius: 4px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { background: #1b365d; color: white; padding: 8px; font-size: 11px; text-align: left; }
+        td { border-bottom: 1px solid #e2e8f0; padding: 8px; font-size: 11px; }
+        
+        .totals-box { margin-left: auto; width: 240px; background: #f1f5f9; padding: 10px; border-radius: 4px; font-size: 12px; }
+        .totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .totals-total { font-weight: bold; font-size: 14px; color: #1b365d; border-top: 1px solid #cbd5e1; padding-top: 4px; }
+        
+        .footer-conditions { background: #f8fafc; padding: 10px; border-radius: 4px; font-size: 10px; color: #475569; margin-top: 30px; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 25px; font-size: 10px; color: #64748b; }
+        .sig-box { width: 45%; background: #fafafa; padding: 10px; height: 50px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- FORMULARIO DE CONTROL -->
+    <div class="form-section">
+        <h2>Panel de Control</h2>
+        
+        <div class="row">
+            <div class="form-group" style="flex: 1;">
+                <label>Tipo Documento</label>
+                <select id="tipoDoc" onchange="actualizar()">
+                    <option value="PRESUPUESTO">Presupuesto</option>
+                    <option value="FACTURA">Factura</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Nº Documento</label>
+                <input type="text" id="numDoc" value="PRES-2026-001" oninput="actualizar()">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Fecha</label>
+            <input type="text" id="fechaDoc" value="18/09/2026" oninput="actualizar()">
+        </div>
+
+        <h3>Datos del Cliente</h3>
+        <div class="form-group"><input type="text" id="cliNombre" placeholder="Nombre / Comunidad" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliNif" placeholder="CIF/NIF" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliDir" placeholder="Dirección" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliTel" placeholder="Teléfono" oninput="actualizar()"></div>
+
+        <h3>Trabajos y Partidas</h3>
+        <div id="itemsContainer"></div>
+        <button class="btn" onclick="agregarItem()">+ Añadir Trabajo</button>
+
+        <h3>Impuestos e IVA</h3>
+        <div class="form-group">
+            <label>Tipo de IVA</label>
+            <select id="tipoIva" onchange="actualizar()">
+                <option value="10">IVA Reducido (10%)</option>
+                <option value="21">IVA General (21%)</option>
+                <option value="0">Sin IVA (0%)</option>
+            </select>
+        </div>
+
+        <br>
+        <button class="btn btn-green" style="width: 100%; padding: 14px;" onclick="descargarPDF()">DESCARGAR PDF</button>
+    </div>
+
+    <!-- VISTA PREVIA HOJA A4 -->
+    <div class="preview-section">
+        <div class="page-a4" id="hojaA4">
+            <div class="header">
+                <div>
+                    <!-- LOGO AQUI -->
+                    <div style="font-weight: bold; font-size: 18px; color: #1b365d; margin-bottom: 6px;">
+                        REFORMAS INTEGRALES<br><span style="font-size: 22px; tracking: 1px;">CARRASCOSA</span>
+                    </div>
+                    <div class="company-info">
+                        <div class="company-title">CARRASCOSA ARAUJO ALEJANDRO</div>
+                        CIF/NIF: 48363668G<br>
+                        Avenida Denia 88 | 03016 Alicante<br>
+                        Teléfono: 622 356 504<br>
+                        e-mail: suministroscarrascosa@gmail.com
+                    </div>
+                </div>
+
+                <div class="client-box">
+                    <strong style="color: #1b365d;">CLIENTE:</strong><br>
+                    <strong>Nombre:</strong> <span id="lblCliNombre">-</span><br>
+                    <strong>Dirección:</strong> <span id="lblCliDir">-</span><br>
+                    <strong>Teléfono:</strong> <span id="lblCliTel">-</span><br>
+                    <strong>CIF/NIF:</strong> <span id="lblCliNif">-</span>
+                </div>
+            </div>
+
+            <div class="doc-header">
+                <span id="lblTituloDoc">PRESUPUESTO Nº: PRES-2026-001</span>
+                <span id="lblFechaDoc">FECHA: 18/09/2026</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">CANT.</th>
+                        <th>CONCEPTO / TRABAJOS A REALIZAR</th>
+                        <th style="width: 18%; text-align: right;">P. UNIT.</th>
+                        <th style="width: 18%; text-align: right;">IMPORTE</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBody"></tbody>
+            </table>
+
+            <div style="color: #dc2626; font-weight: bold; font-size: 11px; margin-bottom: 15px;">
+                Mano de obra y desplazamiento incluido
+            </div>
+
+            <div class="totals-box">
+                <div class="totals-row"><span>BASE IMPONIBLE:</span> <span id="lblBase">0,00 €</span></div>
+                <div class="totals-row"><span>IVA (<span id="lblPorcentajeIva">10</span>%):</span> <span id="lblCuotaIva">0,00 €</span></div>
+                <div class="totals-row totals-total"><span>TOTAL GENERAL:</span> <span id="lblTotalGeneral">0,00 €</span></div>
+            </div>
+
+            <div class="footer-conditions">
+                <strong>FORMA DE PAGO Y CONDICIONES:</strong><br>
+                • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) para formalizar el pedido.<br>
+                • Segundo pago del 25% a mitad de obra y 25% restante a la finalización del trabajo.<br>
+                • IBAN: ES40 2100 2158 6402 0085 2354 (Indicar Nº documento en el concepto).
+            </div>
+
+            <div class="signatures">
+                <div class="sig-box">
+                    <strong>Firma Empresa:</strong><br><br>
+                    CARRASCOSA ARAUJO ALEJANDRO
+                </div>
+                <div class="sig-box">
+                    <strong>Conforme Cliente (Nombre, DNI y Firma):</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let items = [{ cant: "1", unid: "ud", desc: "Saneamiento de paredes y techo", precio: 110 }];
+
+    function renderItems() {
+        const container = document.getElementById("itemsContainer");
+        container.innerHTML = "";
+        items.forEach((item, index) => {
+            container.innerHTML += `
+                <div class="item-row">
+                    <input type="text" style="width: 45px;" value="${item.cant}" oninput="items[${index}].cant = this.value; actualizar();">
+                    <input type="text" style="width: 50px;" value="${item.unid}" oninput="items[${index}].unid = this.value; actualizar();">
+                    <input type="text" style="flex: 1;" value="${item.desc}" oninput="items[${index}].desc = this.value; actualizar();">
+                    <input type="number" style="width: 70px;" value="${item.precio}" oninput="items[${index}].precio = parseFloat(this.value)||0; actualizar();">
+                    <button class="btn btn-danger" onclick="eliminarItem(${index})">X</button>
+                </div>
+            `;
+        });
+    }
+
+    function agregarItem() {
+        items.push({ cant: "1", unid: "ud", desc: "", precio: 0 });
+        renderItems();
+        actualizar();
+    }
+
+    function eliminarItem(index) {
+        if(items.length > 1) {
+            items.splice(index, 1);
+            renderItems();
+            actualizar();
+        }
+    }
+
+    function actualizar() {
+        const tipoDoc = document.getElementById("tipoDoc").value;
+        const numDoc = document.getElementById("numDoc").value;
+        const fecha = document.getElementById("fechaDoc").value;
+
+        document.getElementById("lblTituloDoc").innerText = `${tipoDoc} Nº: ${numDoc}`;
+        document.getElementById("lblFechaDoc").innerText = `FECHA: ${fecha}`;
+        document.getElementById("lblCliNombre").innerText = document.getElementById("cliNombre").value || "-";
+        document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
+        document.getElementById("lblCliDir").innerText = document.getElementById("cliDir").value || "-";
+        document.getElementById("lblCliTel").innerText = document.getElementById("cliTel").value || "-";
+
+        let tbody = document.getElementById("tablaBody");
+        tbody.innerHTML = "";
+        let base = 0;
+
+        items.forEach(item => {
+            let cantNum = parseFloat(item.cant.replace(',', '.')) || 0;
+            let totalFila = cantNum * item.precio;
+            base += totalFila;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.cant} ${item.unid}</td>
+                    <td>${item.desc}</td>
+                    <td style="text-align: right;">${item.precio.toFixed(2)} €</td>
+                    <td style="text-align: right;">${totalFila.toFixed(2)} €</td>
+                </tr>
+            `;
+        });
+
+        let pctIva = parseFloat(document.getElementById("tipoIva").value);
+        let cuotaIva = base * (pctIva / 100);
+        let totalGeneral = base + cuotaIva;
+
+        document.getElementById("lblBase").innerText = base.toFixed(2) + " €";
+        document.getElementById("lblPorcentajeIva").innerText = pctIva;
+        document.getElementById("lblCuotaIva").innerText = cuotaIva.toFixed(2) + " €";
+        document.getElementById("lblTotalGeneral").innerText = totalGeneral.toFixed(2) + " €";
+        document.getElementById("lblAdelanto").innerText = (totalGeneral * 0.5).toFixed(2) + " €";
+    }
+
+    function descargarPDF() {
+        const element = document.getElementById("hojaA4");
+        const opt = {
+            margin: 0,
+            filename: `${document.getElementById("numDoc").value}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        // Carga dinámica de html2pdf
+        let script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        script.onload = () => html2pdf().set(opt).from(element).save();
+        document.body.appendChild(script);
+    }
+
+    renderItems();
+    actualizar();
+</script>
+</body>
+</html>
