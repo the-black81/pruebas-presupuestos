@@ -24,6 +24,9 @@
         .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 15px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
+        .checkbox-group input { width: auto; cursor: pointer; }
+
         /* HOJA A4 CON PIE DE PÁGINA FIJO ABAJO DEL TODO */
         .page-a4 { 
             width: 210mm; 
@@ -58,15 +61,18 @@
             right: 15mm; 
         }
 
-        .totals-container { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; }
-        .leyenda { color: #dc2626; font-weight: bold; font-size: 10px; margin-top: 15px; }
+        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
+        
+        /* TEXTO ROJO AJUSTADO JUSTO ENCIMA DE FORMA DE PAGO */
+        .leyenda { color: #dc2626; font-weight: bold; font-size: 10.5px; padding-bottom: 4px; }
         
         .totals-box { width: 220px; background: #f1f5f9; padding: 8px 12px; border-radius: 4px; font-size: 10.5px; }
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #1b365d; font-weight: bold; }
         .totals-total { font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: 4px; color: #0f172a; }
         
-        .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 9.5px; color: #475569; margin-top: 15px; line-height: 1.4; }
-        .signatures { display: flex; justify-content: space-between; margin-top: 20px; font-size: 9.5px; color: #64748b; }
+        /* TEXTOS MÁS OSCUROS EN CONDICIONES Y PAGO */
+        .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 10px; color: #1e293b; font-weight: 500; margin-top: 6px; line-height: 1.45; border: 1px solid #f1f5f9; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 15px; font-size: 9.5px; color: #334155; }
         .sig-box { width: 48%; background: #fafafa; padding: 8px; height: 45px; border-radius: 4px; border: 1px solid #f1f5f9; }
         
         details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 13px; }
@@ -84,7 +90,6 @@
             <input type="file" id="inputLogo" accept="image/*" onchange="cargarLogo(event)">
         </div>
 
-        <!-- SECCIÓN DESPLEGABLE: DATOS DE MI EMPRESA (EDITABLES) -->
         <details>
             <summary>✏️ Editar Datos de la Empresa</summary>
             <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
@@ -110,6 +115,10 @@
                     <label>Correo Electrónico</label>
                     <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
                 </div>
+                <div class="form-group">
+                    <label>IBAN Corporativo</label>
+                    <input type="text" id="empIban" value="ES40 2100 2158 6402 0085 2354" oninput="actualizar()">
+                </div>
             </div>
         </details>
 
@@ -127,9 +136,15 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Fecha</label>
-            <input type="text" id="fechaDoc" value="18/09/2026" oninput="actualizar()">
+        <div class="row">
+            <div class="form-group" style="flex:1;">
+                <label>Fecha</label>
+                <input type="text" id="fechaDoc" value="18/09/2026" oninput="actualizar()">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Validez del documento</label>
+                <input type="text" id="validezDoc" value="30 Días" oninput="actualizar()">
+            </div>
         </div>
 
         <h3>Datos del Cliente</h3>
@@ -144,7 +159,8 @@
         <div id="itemsContainer"></div>
         <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
-        <div class="form-group" style="margin-top:12px;">
+        <h3>Opciones de Impuestos y Visibilidad</h3>
+        <div class="form-group">
             <label>IVA Aplicable</label>
             <select id="tipoIva" onchange="actualizar()">
                 <option value="10">IVA Reducido (10%)</option>
@@ -153,13 +169,23 @@
             </select>
         </div>
 
+        <!-- OPCIONES PARA AÑADIR/QUITAR ELEMENTOS -->
+        <label class="checkbox-group">
+            <input type="checkbox" id="chkManoObra" checked onchange="actualizar()">
+            Mostrar texto rojo "Mano de obra y desplazamiento incluido"
+        </label>
+
+        <label class="checkbox-group">
+            <input type="checkbox" id="chkFormaPago" checked onchange="actualizar()">
+            Mostrar sección "FORMA DE PAGO E IBAN"
+        </label>
+
         <button class="btn btn-green" onclick="descargarPDF()">DESCARGAR PDF PERFECTO</button>
     </div>
 
     <!-- VISTA PREVIA HOJA A4 -->
     <div class="preview-container">
         <div class="page-a4" id="hojaA4">
-            <!-- CABECERA DE LA HOJA -->
             <div class="header">
                 <div>
                     <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
@@ -190,7 +216,6 @@
                 <span id="lblFechaDoc">FECHA: 18/09/2026</span>
             </div>
 
-            <!-- TABLA DE CONCEPTOS -->
             <table>
                 <thead>
                     <tr>
@@ -203,10 +228,10 @@
                 <tbody id="tablaBody"></tbody>
             </table>
 
-            <!-- PIE DE PÁGINA FIJADO EN LA PARTE INFERIOR DEL A4 -->
+            <!-- PIE DE PÁGINA FIJADO EN LA PARTE INFERIOR -->
             <div class="footer-fixed-bottom">
                 <div class="totals-container">
-                    <div class="leyenda">
+                    <div class="leyenda" id="boxManoObra">
                         Mano de obra y desplazamiento incluido
                     </div>
 
@@ -217,12 +242,12 @@
                     </div>
                 </div>
 
-                <div class="conditions-box">
+                <div class="conditions-box" id="boxFormaPago">
                     <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
                     • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) del total de dicho presupuesto para formalizar el pedido.<br>
                     • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un último pago del 25% restante.<br>
-                    • Validez del documento: 30 Días. Indicar Nº documento en el concepto.<br>
-                    • IBAN: ES40 2100 2158 6402 0085 2354
+                    • Validez del documento: <span id="lblValidezDoc">30 Días</span>. Indicar Nº documento en el concepto.<br>
+                    • IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span>
                 </div>
 
                 <div class="signatures">
@@ -301,6 +326,7 @@
         document.getElementById("lblEmpDir").innerText = document.getElementById("empDir").value || "-";
         document.getElementById("lblEmpTel").innerText = document.getElementById("empTel").value || "-";
         document.getElementById("lblEmpEmail").innerText = document.getElementById("empEmail").value || "-";
+        document.getElementById("lblIban").innerText = document.getElementById("empIban").value || "-";
 
         // Documento y Cliente
         const tipoDoc = document.getElementById("tipoDoc").value;
@@ -309,10 +335,15 @@
 
         document.getElementById("lblTituloDoc").innerText = `${tipoDoc} Nº: ${numDoc}`;
         document.getElementById("lblFechaDoc").innerText = `FECHA: ${fecha}`;
+        document.getElementById("lblValidezDoc").innerText = document.getElementById("validezDoc").value || "30 Días";
         document.getElementById("lblCliNombre").innerText = document.getElementById("cliNombre").value || "-";
         document.getElementById("lblCliDir").innerText = document.getElementById("cliDir").value || "-";
         document.getElementById("lblCliTel").innerText = document.getElementById("cliTel").value || "-";
         document.getElementById("lblCliNif").innerText = document.getElementById("cliNif").value || "-";
+
+        // Visibilidad según Checkboxes
+        document.getElementById("boxManoObra").style.display = document.getElementById("chkManoObra").checked ? "block" : "none";
+        document.getElementById("boxFormaPago").style.display = document.getElementById("chkFormaPago").checked ? "block" : "none";
 
         // Tabla
         let tbody = document.getElementById("tablaBody");
