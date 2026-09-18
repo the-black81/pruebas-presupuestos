@@ -200,12 +200,13 @@
         <div class="form-group"><input type="text" id="cliEmail" value="" placeholder="Correo Electrónico" oninput="actualizar()"></div>
         <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
 
-        <h3>Trabajos y Unidades</h3>
+        <h3>Proyecto y Ubicación</h3>
         <div class="form-group">
             <label>Proyecto / Ubicación (Ej: ASEO, COMEDOR, REFORMA GENERAL)</label>
             <input type="text" id="txtProyecto" value="" placeholder="Ej: REFORMA DE ASEO Y COCINA" oninput="actualizar()">
         </div>
 
+        <h3>Trabajos y Unidades</h3>
         <div id="itemsContainer"></div>
         <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
@@ -411,7 +412,22 @@
             localStorage.setItem("carrascosa_seq_fact", numFactura);
             document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
         }
+
+        // Reseteo completo de datos para el nuevo documento
+        limpiarFormularioCompleto();
         actualizar();
+    }
+
+    function limpiarFormularioCompleto() {
+        document.getElementById("selectCliente").value = "";
+        document.getElementById("cliNombre").value = "";
+        document.getElementById("cliDir").value = "";
+        document.getElementById("cliTel").value = "";
+        document.getElementById("cliNif").value = "";
+        document.getElementById("cliEmail").value = "";
+        document.getElementById("txtProyecto").value = "";
+        items = [{ cant: "1", unid: "", desc: "", precio: 0.00 }];
+        renderItems();
     }
 
     function resetearContadoresACero() {
@@ -538,8 +554,6 @@
             document.getElementById("cliNif").value = "";
             document.getElementById("cliEmail").value = "";
         }
-        
-        crearNuevoDocumentoCorrelativo();
         actualizar();
     }
 
