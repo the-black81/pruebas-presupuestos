@@ -263,7 +263,8 @@
                 <div class="conditions-box" id="boxFormaPago">
                     <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
                     • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) para formalizar el pedido.<br>
-                    • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un 25% restante a la finalización.<br>
+                    • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra.<br>
+                    • Pago final restante del 25% (<span id="lblPagoFinal">0,00 €</span>) a la finalización de los trabajos.<br>
                     • Validez del documento: <span id="lblValidezDoc">30 Días</span>.<br>
                     
                     <div class="bank-details">
@@ -462,7 +463,7 @@
             `;
         });
 
-        // Totales
+        // Totales y Desglose de Pagos
         let pctIva = parseFloat(document.getElementById("tipoIva").value);
         let cuotaIva = base * (pctIva / 100);
         let totalGeneral = base + cuotaIva;
@@ -471,8 +472,15 @@
         document.getElementById("lblPorcentajeIva").innerText = pctIva;
         document.getElementById("lblCuotaIva").innerText = cuotaIva.toFixed(2).replace('.', ',') + " €";
         document.getElementById("lblTotalGeneral").innerText = totalGeneral.toFixed(2).replace('.', ',') + " €";
-        document.getElementById("lblAdelanto").innerText = (totalGeneral * 0.5).toFixed(2).replace('.', ',') + " €";
-        document.getElementById("lblPago2").innerText = (totalGeneral * 0.25).toFixed(2).replace('.', ',') + " €";
+        
+        // Cálculo de los 3 plazos
+        let pago50 = totalGeneral * 0.5;
+        let pago25_1 = totalGeneral * 0.25;
+        let pago25_2 = totalGeneral - (pago50 + pago25_1); // Ajuste exacto para evitar decimales sueltos
+
+        document.getElementById("lblAdelanto").innerText = pago50.toFixed(2).replace('.', ',') + " €";
+        document.getElementById("lblPago2").innerText = pago25_1.toFixed(2).replace('.', ',') + " €";
+        document.getElementById("lblPagoFinal").innerText = pago25_2.toFixed(2).replace('.', ',') + " €";
     }
 
     function descargarPDF() {
