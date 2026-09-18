@@ -23,8 +23,18 @@
         .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 15px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         
-        /* HOJA A4 EXACTA A LA FOTO */
-        .page-a4 { width: 210mm; min-height: 297mm; background: white; padding: 12mm 15mm; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-size: 11px; color: #1e293b; }
+        /* HOJA A4 CON PIE DE PÁGINA FIJO ABAJO DEL TODO */
+        .page-a4 { 
+            width: 210mm; 
+            height: 297mm; 
+            background: white; 
+            padding: 12mm 15mm; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            position: relative; 
+            font-size: 11px; 
+            color: #1e293b; 
+        }
+        
         .header { display: flex; justify-content: space-between; margin-bottom: 15px; }
         .logo-img { max-width: 160px; max-height: 65px; object-fit: contain; display: block; margin-bottom: 6px; }
         .company-info { font-size: 10px; color: #334155; line-height: 1.3; }
@@ -39,6 +49,14 @@
         th { background: #1b365d; color: white; padding: 6px 8px; font-size: 10px; text-align: left; font-weight: bold; }
         td { border-bottom: 1px solid #e2e8f0; padding: 6px 8px; font-size: 10px; color: #334155; }
         
+        /* BLOQUE INFERIOR FIJADO AL FINAL DE LA HOJA A4 */
+        .footer-fixed-bottom { 
+            position: absolute; 
+            bottom: 12mm; 
+            left: 15mm; 
+            right: 15mm; 
+        }
+
         .totals-container { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; }
         .leyenda { color: #dc2626; font-weight: bold; font-size: 10px; margin-top: 15px; }
         
@@ -46,15 +64,15 @@
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #1b365d; font-weight: bold; }
         .totals-total { font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: 4px; color: #0f172a; }
         
-        .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 9.5px; color: #475569; margin-top: 20px; line-height: 1.4; }
-        .signatures { display: flex; justify-content: space-between; margin-top: 25px; font-size: 9.5px; color: #64748b; }
+        .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 9.5px; color: #475569; margin-top: 15px; line-height: 1.4; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 20px; font-size: 9.5px; color: #64748b; }
         .sig-box { width: 48%; background: #fafafa; padding: 8px; height: 45px; border-radius: 4px; border: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- PANEL IZQUIERDO -->
+    <!-- PANEL IZQUIERDO DE CONFIGURACIÓN -->
     <div class="panel-control">
         <h2>Panel de Configuración</h2>
         
@@ -90,7 +108,7 @@
             <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="H53086567" placeholder="CIF/NIF" oninput="actualizar()"></div>
         </div>
 
-        <label style="margin-top:12px;">Trabajos y Unidades (m², kg, ud, ml, horas)</label>
+        <label style="margin-top:12px;">Trabajos y Unidades (m², kg, ud, ml, hrs)</label>
         <div id="itemsContainer"></div>
         <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
@@ -106,9 +124,10 @@
         <button class="btn btn-green" onclick="descargarPDF()">DESCARGAR PDF PERFECTO</button>
     </div>
 
-    <!-- VISTA PREVIA HOJA A4 IDÉNTICA A LA FOTO -->
+    <!-- VISTA PREVIA HOJA A4 -->
     <div class="preview-container">
         <div class="page-a4" id="hojaA4">
+            <!-- CABECERA DE LA HOJA -->
             <div class="header">
                 <div>
                     <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
@@ -139,6 +158,7 @@
                 <span id="lblFechaDoc">FECHA: 18/09/2026</span>
             </div>
 
+            <!-- TABLA DE CONCEPTOS -->
             <table>
                 <thead>
                     <tr>
@@ -151,33 +171,36 @@
                 <tbody id="tablaBody"></tbody>
             </table>
 
-            <div class="totals-container">
-                <div class="leyenda">
-                    Mano de obra y desplazamiento incluido
+            <!-- PIE DE PÁGINA FIJADO EN LA PARTE INFERIOR DEL A4 -->
+            <div class="footer-fixed-bottom">
+                <div class="totals-container">
+                    <div class="leyenda">
+                        Mano de obra y desplazamiento incluido
+                    </div>
+
+                    <div class="totals-box">
+                        <div class="totals-row"><span>BASE IMPONIBLE:</span> <span id="lblBase">0,00 €</span></div>
+                        <div class="totals-row"><span>IVA (<span id="lblPorcentajeIva">10</span>%):</span> <span id="lblCuotaIva">0,00 €</span></div>
+                        <div class="totals-row totals-total"><span>TOTAL GENERAL:</span> <span id="lblTotalGeneral">0,00 €</span></div>
+                    </div>
                 </div>
 
-                <div class="totals-box">
-                    <div class="totals-row"><span>BASE IMPONIBLE:</span> <span id="lblBase">0,00 €</span></div>
-                    <div class="totals-row"><span>IVA (<span id="lblPorcentajeIva">10</span>%):</span> <span id="lblCuotaIva">0,00 €</span></div>
-                    <div class="totals-row totals-total"><span>TOTAL GENERAL:</span> <span id="lblTotalGeneral">0,00 €</span></div>
+                <div class="conditions-box">
+                    <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
+                    • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) del total de dicho presupuesto para formalizar el pedido.<br>
+                    • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un último pago del 25% restante.<br>
+                    • Validez del documento: 30 Días. Indicar Nº documento en el concepto.<br>
+                    • IBAN: ES40 2100 2158 6402 0085 2354
                 </div>
-            </div>
 
-            <div class="conditions-box">
-                <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
-                • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) del total de dicho presupuesto para formalizar el pedido.<br>
-                • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un último pago del 25% restante.<br>
-                • Validez del documento: 30 Días. Indicar Nº documento en el concepto.<br>
-                • IBAN: ES40 2100 2158 6402 0085 2354
-            </div>
-
-            <div class="signatures">
-                <div class="sig-box">
-                    <strong>Firma Empresa:</strong><br>
-                    CARRASCOSA ARAUJO ALEJANDRO
-                </div>
-                <div class="sig-box">
-                    <strong>Conforme Cliente (Nombre, DNI y Firma):</strong>
+                <div class="signatures">
+                    <div class="sig-box">
+                        <strong>Firma Empresa:</strong><br>
+                        CARRASCOSA ARAUJO ALEJANDRO
+                    </div>
+                    <div class="sig-box">
+                        <strong>Conforme Cliente (Nombre, DNI y Firma):</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,11 +208,9 @@
 </div>
 
 <script>
+    // La unidad inicial empieza en blanco ("") por defecto
     let items = [
-        { cant: "1", unid: "ud", desc: "Saneamiento de paredes y techo", precio: 110.00 },
-        { cant: "1", unid: "ud", desc: "Reparación estructural del techo", precio: 105.00 },
-        { cant: "1", unid: "ud", desc: "Reparación de escayola", precio: 90.00 },
-        { cant: "5", unid: "m²", desc: "Pintado de pared y techo", precio: 17.00 }
+        { cant: "1", unid: "", desc: "Saneamiento de paredes y techo", precio: 110.00 }
     ];
 
     function cargarLogo(event) {
@@ -210,7 +231,8 @@
             container.innerHTML += `
                 <div class="item-row">
                     <input type="text" style="width: 40px;" value="${item.cant}" oninput="items[${index}].cant = this.value; actualizar();">
-                    <select style="width: 55px;" onchange="items[${index}].unid = this.value; actualizar();">
+                    <select style="width: 60px;" onchange="items[${index}].unid = this.value; actualizar();">
+                        <option value="" ${item.unid===''?'selected':''}>-</option>
                         <option value="ud" ${item.unid==='ud'?'selected':''}>ud</option>
                         <option value="m²" ${item.unid==='m²'?'selected':''}>m²</option>
                         <option value="ml" ${item.unid==='ml'?'selected':''}>ml</option>
@@ -226,7 +248,7 @@
     }
 
     function agregarItem() {
-        items.push({ cant: "1", unid: "m²", desc: "", precio: 0 });
+        items.push({ cant: "1", unid: "", desc: "", precio: 0 });
         renderItems();
         actualizar();
     }
@@ -260,9 +282,11 @@
             let totalFila = cantNum * item.precio;
             base += totalFila;
 
+            let unidadTexto = item.unid ? ` ${item.unid}` : '';
+
             tbody.innerHTML += `
                 <tr>
-                    <td>${item.cant} ${item.unid}</td>
+                    <td>${item.cant}${unidadTexto}</td>
                     <td>${item.desc}</td>
                     <td style="text-align: right;">${item.precio.toFixed(2).replace('.', ',')} €</td>
                     <td style="text-align: right;">${totalFila.toFixed(2).replace('.', ',')} €</td>
