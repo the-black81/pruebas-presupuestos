@@ -46,8 +46,8 @@
             box-sizing: border-box;
         }
         
-        .header { display: flex; justify-content: space-between; margin-bottom: 6px; }
-        .logo-img { max-width: 140px; max-height: 48px; object-fit: contain; display: block; margin-bottom: 4px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 6px; margin-top: -5mm; }
+        .logo-img { max-width: 180px; max-height: 65px; object-fit: contain; display: block; margin-bottom: 2px; margin-top: -2px; }
         .company-info { font-size: 9px; color: #334155; line-height: 1.2; }
         .company-name { font-weight: bold; color: #0f172a; font-size: 10px; }
         
@@ -137,9 +137,13 @@
             </select>
         </div>
 
-        <details>
+        <details open>
             <summary>✏️ Editar Datos de la Empresa</summary>
             <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>Título Comercial (Fallback si no hay Logo)</label>
+                    <input type="text" id="empTituloComercial" value="REFORMAS INTEGRALES CARRASCOSA" oninput="actualizar()">
+                </div>
                 <div class="form-group">
                     <label>Nombre Fiscal / Empresa</label>
                     <input type="text" id="empNombre" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
@@ -245,8 +249,8 @@
                 <div class="header">
                     <div>
                         <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
-                        <div id="textLogoFallback" style="font-weight:bold; font-size:14px; color:#1b365d; margin-bottom:4px;">
-                            REFORMAS INTEGRALES<br><span style="font-size:16px;">CARRASCOSA</span>
+                        <div id="textLogoFallback" style="font-weight:bold; font-size:15px; color:#1b365d; margin-bottom:4px; line-height: 1.15; text-transform: uppercase;">
+                            REFORMAS INTEGRALES<br><span style="font-size:17px;">CARRASCOSA</span>
                         </div>
                         <div class="company-info">
                             <div class="company-name" id="lblEmpNombre">CARRASCOSA ARAUJO ALEJANDRO</div>
@@ -594,6 +598,9 @@
 
     function actualizar() {
         const empNombre = document.getElementById("empNombre").value || "CARRASCOSA ARAUJO ALEJANDRO";
+        const empTitulo = document.getElementById("empTituloComercial").value || "REFORMAS INTEGRALES CARRASCOSA";
+
+        document.getElementById("textLogoFallback").innerHTML = empTitulo.replace(" ", "<br>");
         document.getElementById("lblEmpNombre").innerText = empNombre;
         document.getElementById("lblEmpNombreFirma").innerText = empNombre;
         document.getElementById("lblEmpNif").innerText = document.getElementById("empNif").value || "-";
