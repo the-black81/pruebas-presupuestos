@@ -27,7 +27,7 @@
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
         .checkbox-group input { width: auto; cursor: pointer; }
 
-        /* HOJA A4 EXACTA */
+        /* HOJA A4 CON PIE DE PÁGINA FIJO ABAJO DEL TODO */
         .page-a4 { 
             width: 210mm; 
             height: 297mm; 
@@ -68,7 +68,10 @@
         .totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #1b365d; font-weight: bold; }
         .totals-total { font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: 4px; color: #0f172a; }
         
-        .conditions-box { background: #f8fafc; padding: 8px 10px; border-radius: 4px; font-size: 10px; color: #1e293b; font-weight: 500; margin-top: 6px; line-height: 1.45; border: 1px solid #f1f5f9; }
+        /* CONDICIONES DE PAGO REORGANIZADAS */
+        .conditions-box { background: #f8fafc; padding: 8px 12px; border-radius: 4px; font-size: 10px; color: #1e293b; font-weight: 500; margin-top: 6px; line-height: 1.5; border: 1px solid #e2e8f0; }
+        .bank-details { margin-top: 6px; padding-top: 6px; border-top: 1px solid #cbd5e1; font-weight: bold; color: #1b365d; }
+        
         .signatures { display: flex; justify-content: space-between; margin-top: 15px; font-size: 9.5px; color: #334155; }
         .sig-box { width: 48%; background: #fafafa; padding: 8px; height: 45px; border-radius: 4px; border: 1px solid #f1f5f9; }
         
@@ -120,7 +123,7 @@
                     <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
                 </div>
                 <div class="form-group">
-                    <label>Titular de la Cuenta / Referente</label>
+                    <label>Titular de la Cuenta / Banco</label>
                     <input type="text" id="empTitularIban" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
                 </div>
                 <div class="form-group">
@@ -259,11 +262,15 @@
 
                 <div class="conditions-box" id="boxFormaPago">
                     <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
-                    • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) del total de dicho presupuesto para formalizar el pedido.<br>
-                    • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un último pago del 25% restante.<br>
-                    • Validez del documento: <span id="lblValidezDoc">30 Días</span>. Indicar Nº documento en el concepto.<br>
-                    • Titular de la cuenta: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span><br>
-                    • IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span>
+                    • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) para formalizar el pedido.<br>
+                    • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra y un 25% restante a la finalización.<br>
+                    • Validez del documento: <span id="lblValidezDoc">30 Días</span>.<br>
+                    
+                    <div class="bank-details">
+                        Titular: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span> &nbsp;|&nbsp; 
+                        IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span><br>
+                        <span style="font-weight: normal; color: #475569; font-size: 9.5px;">(Indicar Nº de documento en el concepto de la transferencia)</span>
+                    </div>
                 </div>
 
                 <div class="signatures">
