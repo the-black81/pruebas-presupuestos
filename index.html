@@ -26,13 +26,12 @@
         .btn-blue { background: #2563eb; margin-top: 8px; padding: 12px; font-size: 14px; }
         .btn-purple { background: #7c3aed; margin-top: 8px; padding: 10px; font-size: 13px; }
         .btn-orange { background: #d97706; margin-top: 8px; padding: 8px; font-size: 12px; }
-        .btn-red-subtle { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 4px 8px; font-size: 11px; margin-top: 4px; }
+        .btn-red { background: #dc2626; color: white; margin-top: 6px; padding: 6px; font-size: 11px; }
         .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
         .checkbox-group input { width: auto; cursor: pointer; }
 
-        /* DISEÑO FLEXIBLE MULTIPÁGINA */
         .page-a4 { 
             width: 210mm; 
             min-height: 295mm;
@@ -92,43 +91,31 @@
     <div class="panel-control">
         <h2>Panel de Configuración</h2>
         
-        <button class="btn btn-orange" onclick="cargarDatosPrueba()">🧪 Cargar Datos de Prueba Rápida</button>
+        <button class="btn btn-orange" onclick="cargarDatosPruebaSinAfectarContador()">🧪 Cargar Datos de Prueba (No altera contadores)</button>
 
-        <h3>Gestión de Documento y Numeración</h3>
+        <h3>Numeración del Documento</h3>
         <div class="row">
             <div class="form-group" style="flex:1;">
                 <label>Tipo Documento</label>
-                <select id="tipoDoc" onchange="cambiarTipoDocManual()">
+                <select id="tipoDoc" onchange="cambiarTipoDocUI()">
                     <option value="PRESUPUESTO">Presupuesto</option>
                     <option value="FACTURA">Factura</option>
                 </select>
             </div>
             <div class="form-group" style="flex:1;">
-                <label>Nº Documento (Editable)</label>
-                <input type="text" id="numDoc" value="" oninput="actualizar()">
+                <label>Nº Documento (100% Editable)</label>
+                <input type="text" id="numDoc" value="" oninput="detectarNumeroManualYCargar()">
             </div>
         </div>
 
-        <button class="btn btn-purple" onclick="convertirAFactura()">🔄 Convertir este Presupuesto a Factura</button>
+        <div class="row">
+            <button class="btn" style="flex:1;" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
+            <button class="btn btn-purple" style="flex:1;" onclick="convertirAFactura()">🔄 Pasar a Factura</button>
+        </div>
 
-        <details style="margin-top:8px;">
-            <summary>⚙️ Ajustes de Contadores / Reiniciar</summary>
-            <div style="background:#f8fafc; padding:8px; border-radius:4px; border:1px solid #e2e8f0; margin-top:4px;">
-                <div class="row">
-                    <div class="form-group" style="flex:1;">
-                        <label>Prox. Presupuesto N°</label>
-                        <input type="number" id="cfgNumPres" value="1" onchange="guardarContadoresMemoria()">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label>Prox. Factura N°</label>
-                        <input type="number" id="cfgNumFact" value="1" onchange="guardarContadoresMemoria()">
-                    </div>
-                </div>
-                <button class="btn btn-red-subtle" onclick="reiniciarContadores()">⚠️ Reiniciar Contadores a 1</button>
-            </div>
-        </details>
+        <button class="btn btn-red" onclick="resetearContadoresACero()">⚠️ Resetear Contadores a 1</button>
 
-        <div class="form-group" style="margin-top:8px;">
+        <div class="form-group" style="margin-top:12px;">
             <label>Subir Nuevo Logo al Banco de Logos</label>
             <input type="file" id="inputLogo" accept="image/*" onchange="guardarNuevoLogo(event)">
         </div>
@@ -231,7 +218,7 @@
             Mostrar IBAN y Datos Bancarios
         </label>
 
-        <button class="btn btn-green" onclick="descargarPDFYSumar()">📄 DESCARGAR PDF Y AVANZAR CONTADOR</button>
+        <button class="btn btn-green" onclick="descargarPDF()">📄 DESCARGAR PDF</button>
         <button class="btn btn-blue" onclick="descargarJPG()">🖼️ DESCARGAR JPG</button>
     </div>
 
@@ -328,68 +315,87 @@
     let galeriaLogos = JSON.parse(localStorage.getItem("carrascosa_logos") || "[]");
     let clientesGuardados = JSON.parse(localStorage.getItem("carrascosa_clientes") || "[]");
 
-    // CONTADORES CON MEMORIA LOCALSTORAGE
-    let contadorPresupuesto = parseInt(localStorage.getItem("carrascosa_num_presupuesto") || "1");
-    let contadorFactura = parseInt(localStorage.getItem("carrascosa_num_factura") || "1");
+    let numPresupuesto = parseInt(localStorage.getItem("carrascosa_seq_pres") || "1");
+    let numFactura = parseInt(localStorage.getItem("carrascosa_seq_fact") || "1");
 
-    function inicializarContadoresUI() {
-        document.getElementById("cfgNumPres").value = contadorPresupuesto;
-        document.getElementById("cfgNumFact").value = contadorFactura;
-        generarNumeroDocActual();
+    function formatearNumero(prefijo, numero) {
+        const anio = new Date().getFullYear();
+        return `${prefijo}-${anio}-${String(numero).padStart(3, '0')}`;
     }
 
-    function generarNumeroDocActual() {
+    function inicializarNumeracion() {
         const tipo = document.getElementById("tipoDoc").value;
-        const anio = new Date().getFullYear();
         if (tipo === "PRESUPUESTO") {
-            const numPadd = String(contadorPresupuesto).padStart(3, '0');
-            document.getElementById("numDoc").value = `PRES-${anio}-${numPadd}`;
+            document.getElementById("numDoc").value = formatearNumero("PRES", numPresupuesto);
         } else {
-            const numPadd = String(contadorFactura).padStart(3, '0');
-            document.getElementById("numDoc").value = `FACT-${anio}-${numPadd}`;
+            document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
         }
         actualizar();
     }
 
-    function cambiarTipoDocManual() {
-        generarNumeroDocActual();
+    function cambiarTipoDocUI() {
+        inicializarNumeracion();
     }
 
-    function guardarContadoresMemoria() {
-        contadorPresupuesto = parseInt(document.getElementById("cfgNumPres").value) || 1;
-        contadorFactura = parseInt(document.getElementById("cfgNumFact").value) || 1;
-        localStorage.setItem("carrascosa_num_presupuesto", contadorPresupuesto);
-        localStorage.setItem("carrascosa_num_factura", contadorFactura);
-        generarNumeroDocActual();
+    function detectarNumeroManualYCargar() {
+        const valorManual = document.getElementById("numDoc").value;
+        const coincidencias = valorManual.match(/\d+/g);
+        
+        if (coincidencias && coincidencias.length > 0) {
+            const ultimoNum = parseInt(coincidencias[coincidencias.length - 1]);
+            const tipo = document.getElementById("tipoDoc").value;
+            
+            if (tipo === "PRESUPUESTO") {
+                numPresupuesto = ultimoNum;
+                localStorage.setItem("carrascosa_seq_pres", numPresupuesto);
+            } else {
+                numFactura = ultimoNum;
+                localStorage.setItem("carrascosa_seq_fact", numFactura);
+            }
+        }
+        actualizar();
     }
 
-    function reiniciarContadores() {
-        if (confirm("¿Quieres reiniciar los contadores a 1?")) {
-            contadorPresupuesto = 1;
-            contadorFactura = 1;
-            document.getElementById("cfgNumPres").value = 1;
-            document.getElementById("cfgNumFact").value = 1;
-            guardarContadoresMemoria();
+    function crearNuevoDocumentoCorrelativo() {
+        const tipo = document.getElementById("tipoDoc").value;
+        if (tipo === "PRESUPUESTO") {
+            numPresupuesto++;
+            localStorage.setItem("carrascosa_seq_pres", numPresupuesto);
+            document.getElementById("numDoc").value = formatearNumero("PRES", numPresupuesto);
+        } else {
+            numFactura++;
+            localStorage.setItem("carrascosa_seq_fact", numFactura);
+            document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
+        }
+        actualizar();
+    }
+
+    function resetearContadoresACero() {
+        if (confirm("¿Estás seguro de resetear la numeración a 1?")) {
+            numPresupuesto = 1;
+            numFactura = 1;
+            localStorage.setItem("carrascosa_seq_pres", 1);
+            localStorage.setItem("carrascosa_seq_fact", 1);
+            inicializarNumeracion();
         }
     }
 
     function convertirAFactura() {
         document.getElementById("tipoDoc").value = "FACTURA";
-        generarNumeroDocActual();
+        document.getElementById("numDoc").value = formatearNumero("FACT", numFactura);
+        actualizar();
     }
 
-    function cargarDatosPrueba() {
-        document.getElementById("cliNombre").value = "Residencial Park Vista (Prueba)";
-        document.getElementById("cliDir").value = "Av. Alfonso El Sabio 22, Alicante";
-        document.getElementById("cliTel").value = "600 123 456";
-        document.getElementById("cliNif").value = "B03998811";
-        document.getElementById("cliEmail").value = "admin@parkvista.com";
+    function cargarDatosPruebaSinAfectarContador() {
+        document.getElementById("cliNombre").value = "Comunidad Propietarios (PRUEBA)";
+        document.getElementById("cliDir").value = "Av. Oscar Esplá 12, Alicante";
+        document.getElementById("cliTel").value = "655 443 221";
+        document.getElementById("cliNif").value = "H01234567";
+        document.getElementById("cliEmail").value = "prueba@comunidad.com";
 
         items = [
-            { cant: "1", unid: "ud", desc: "Desmontaje y retirada de escayola dañada", precio: 180.00 },
-            { cant: "25", unid: "m²", desc: "Lucido de paredes con alisado plastó", precio: 14.50 },
-            { cant: "1", unid: "ud", desc: "Suministro e instalación de moldura decorativa", precio: 95.00 },
-            { cant: "2", unid: "hrs", desc: "Saneamiento de humedad en esquina superior", precio: 45.00 }
+            { cant: "1", unid: "ud", desc: "Prueba: Retirada de escombros y contenedores", precio: 220.00 },
+            { cant: "15", unid: "m²", desc: "Prueba: Pintura plástica mate color blanco", precio: 12.00 }
         ];
 
         renderItems();
@@ -580,7 +586,7 @@
         document.getElementById("lblPagoFinal").innerText = pago25_2.toFixed(2).replace('.', ',') + " €";
     }
 
-    function descargarPDFYSumar() {
+    function descargarPDF() {
         const element = document.getElementById("hojaA4");
         const opt = {
             margin: 0,
@@ -596,16 +602,7 @@
             if (totalPages > 1 && items.length <= 12) {
                 pdf.deletePage(totalPages);
             }
-        }).save().then(() => {
-            // Incrementar contador según el tipo de documento generado
-            const tipo = document.getElementById("tipoDoc").value;
-            if (tipo === "PRESUPUESTO") {
-                contadorPresupuesto++;
-            } else {
-                contadorFactura++;
-            }
-            guardarContadoresMemoria();
-        });
+        }).save();
     }
 
     function descargarJPG() {
@@ -620,7 +617,7 @@
 
     cargarDesplegableLogos();
     cargarDesplegableClientes();
-    inicializarContadoresUI();
+    inicializarNumeracion();
     renderItems();
     actualizar();
 </script>
